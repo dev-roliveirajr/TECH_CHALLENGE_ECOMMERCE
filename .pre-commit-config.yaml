@@ -6,9 +6,10 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        args: [--maxkb=1500]
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 24.10.0
     hooks:
       - id: black
         language_version: python3
@@ -17,5 +18,5 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
-        # Adicionamos argumentos para usar as configurações definidas no setup.cfg
+        # Argumentos para usar as configurações definidas no setup.cfg
         args: [--config=setup.cfg]
