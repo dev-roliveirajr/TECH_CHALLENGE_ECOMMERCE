@@ -1,0 +1,829 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Métricas de Negócio - E-commerce NPS</title>
+
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --panel: #ffffff;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px var(--shadow);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .dimension-section {
+            margin-bottom: 50px;
+        }
+
+        .dimension-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dimension-title.comprador {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .dimension-title.pedido {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .dimension-title.logistica {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .dimension-title.atendimento {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .dimension-title.score {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .dimension-icon {
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #34495e;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metric-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .faixa {
+            color: #555;
+            background: #f9f9f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .number {
+            text-align: right;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-weight: 500;
+        }
+
+        .detration {
+            font-weight: 600;
+        }
+
+        .nps {
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .low {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .medium {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .high {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+        }
+    </style>
+
+    </head>
+    <body>
+        <div class="container">
+            <h1>📊 Métricas de Negócio - Base de Dados E-commerce</h1>
+            <p class="subtitle">
+                Análise estruturada em 5 dimensões: Comprador, Pedido,
+                Logística, Atendimento e Score
+            </p>
+
+        <div class="dimension-section">
+            <div class="dimension-title comprador">
+                <span class="dimension-icon">👤</span>
+                <span>COMPRADOR</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Faixa</th>
+                        <th class="number">Qtd</th>
+                        <th class="number">Taxa Detração</th>
+                        <th class="number">NPS Médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="metric-name">Faixa Etária (anos)</td>
+                        <td><span class="faixa">18-25</span></td>
+                        <td class="number">344</td>
+                        <td class="number"><span class="medium">75.87%</span></td>
+                        <td class="number"><span class="nps">4.46</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">26-35</span></td>
+                        <td class="number">461</td>
+                        <td class="number"><span class="medium">70.28%</span></td>
+                        <td class="number"><span class="nps">4.65</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">36-45</span></td>
+                        <td class="number">509</td>
+                        <td class="number"><span class="medium">76.82%</span></td>
+                        <td class="number"><span class="nps">4.13</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">46-55</span></td>
+                        <td class="number">480</td>
+                        <td class="number"><span class="medium">73.75%</span></td>
+                        <td class="number"><span class="nps">4.30</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">56-65</span></td>
+                        <td class="number">468</td>
+                        <td class="number"><span class="medium">75.43%</span></td>
+                        <td class="number"><span class="nps">4.28</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">65+</span></td>
+                        <td class="number">238</td>
+                        <td class="number"><span class="medium">70.59%</span></td>
+                        <td class="number"><span class="nps">4.63</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Tempo de Relacionamento</td>
+                        <td><span class="faixa">0-1 ano</span></td>
+                        <td class="number">224</td>
+                        <td class="number"><span class="medium">75.89%</span></td>
+                        <td class="number"><span class="nps">4.17</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">1-2 anos</span></td>
+                        <td class="number">242</td>
+                        <td class="number"><span class="medium">71.9%</span></td>
+                        <td class="number"><span class="nps">4.65</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">2-3 anos</span></td>
+                        <td class="number">252</td>
+                        <td class="number"><span class="medium">74.21%</span></td>
+                        <td class="number"><span class="nps">4.36</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3-4 anos</span></td>
+                        <td class="number">223</td>
+                        <td class="number"><span class="medium">72.2%</span></td>
+                        <td class="number"><span class="nps">4.37</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4-5 anos</span></td>
+                        <td class="number">244</td>
+                        <td class="number"><span class="medium">75.82%</span></td>
+                        <td class="number"><span class="nps">4.31</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">5+ anos</span></td>
+                        <td class="number">1,315</td>
+                        <td class="number"><span class="medium">74.07%</span></td>
+                        <td class="number"><span class="nps">4.38</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Região Geográfica</td>
+                        <td><span class="faixa">Centro-Oeste</span></td>
+                        <td class="number">468</td>
+                        <td class="number"><span class="medium">74.36%</span></td>
+                        <td class="number"><span class="nps">4.21</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Nordeste</span></td>
+                        <td class="number">485</td>
+                        <td class="number"><span class="medium">74.02%</span></td>
+                        <td class="number"><span class="nps">4.42</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Norte</span></td>
+                        <td class="number">506</td>
+                        <td class="number"><span class="medium">74.51%</span></td>
+                        <td class="number"><span class="nps">4.38</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Sudeste</span></td>
+                        <td class="number">520</td>
+                        <td class="number"><span class="medium">74.62%</span></td>
+                        <td class="number"><span class="nps">4.37</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Sul</span></td>
+                        <td class="number">521</td>
+                        <td class="number"><span class="medium">72.74%</span></td>
+                        <td class="number"><span class="nps">4.49</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dimension-section">
+            <div class="dimension-title pedido">
+                <span class="dimension-icon">📦</span>
+                <span>PEDIDO</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Faixa</th>
+                        <th class="number">Qtd</th>
+                        <th class="number">Taxa Detração</th>
+                        <th class="number">NPS Médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="metric-name">Faixa de Valor</td>
+                        <td><span class="faixa">R$ 0-100</span></td>
+                        <td class="number">162</td>
+                        <td class="number"><span class="medium">77.78%</span></td>
+                        <td class="number"><span class="nps">4.05</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 100-250</span></td>
+                        <td class="number">588</td>
+                        <td class="number"><span class="medium">75.51%</span></td>
+                        <td class="number"><span class="nps">4.27</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 250-500</span></td>
+                        <td class="number">937</td>
+                        <td class="number"><span class="medium">74.07%</span></td>
+                        <td class="number"><span class="nps">4.42</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 500-750</span></td>
+                        <td class="number">487</td>
+                        <td class="number"><span class="medium">72.07%</span></td>
+                        <td class="number"><span class="nps">4.41</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 750-1K</span></td>
+                        <td class="number">190</td>
+                        <td class="number"><span class="medium">70.53%</span></td>
+                        <td class="number"><span class="nps">4.62</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 1K+</span></td>
+                        <td class="number">136</td>
+                        <td class="number"><span class="medium">75.0%</span></td>
+                        <td class="number"><span class="nps">4.53</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Quantidade de Itens</td>
+                        <td><span class="faixa">2 items</span></td>
+                        <td class="number">409</td>
+                        <td class="number"><span class="medium">72.62%</span></td>
+                        <td class="number"><span class="nps">4.33</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3 items</span></td>
+                        <td class="number">418</td>
+                        <td class="number"><span class="medium">72.49%</span></td>
+                        <td class="number"><span class="nps">4.47</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4-5 items</span></td>
+                        <td class="number">870</td>
+                        <td class="number"><span class="medium">75.06%</span></td>
+                        <td class="number"><span class="nps">4.28</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">6-10 items</span></td>
+                        <td class="number">803</td>
+                        <td class="number"><span class="medium">74.47%</span></td>
+                        <td class="number"><span class="nps">4.47</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Faixa de Frete</td>
+                        <td><span class="faixa">R$ 0-20</span></td>
+                        <td class="number">157</td>
+                        <td class="number"><span class="medium">75.8%</span></td>
+                        <td class="number"><span class="nps">4.40</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 20-35</span></td>
+                        <td class="number">825</td>
+                        <td class="number"><span class="medium">71.88%</span></td>
+                        <td class="number"><span class="nps">4.53</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 35-50</span></td>
+                        <td class="number">1,114</td>
+                        <td class="number"><span class="medium">74.33%</span></td>
+                        <td class="number"><span class="nps">4.32</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 50-65</span></td>
+                        <td class="number">372</td>
+                        <td class="number"><span class="medium">77.42%</span></td>
+                        <td class="number"><span class="nps">4.20</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">R$ 65+</span></td>
+                        <td class="number">32</td>
+                        <td class="number"><span class="medium">71.88%</span></td>
+                        <td class="number"><span class="nps">4.52</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dimension-section">
+            <div class="dimension-title logistica">
+                <span class="dimension-icon">🚚</span>
+                <span>LOGÍSTICA</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Faixa</th>
+                        <th class="number">Qtd</th>
+                        <th class="number">Taxa Detração</th>
+                        <th class="number">NPS Médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="metric-name">Dias de Atraso</td>
+                        <td><span class="faixa">1 dia</span></td>
+                        <td class="number">277</td>
+                        <td class="number"><span class="high">36.46%</span></td>
+                        <td class="number"><span class="nps">6.86</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">2 dias</span></td>
+                        <td class="number">615</td>
+                        <td class="number"><span class="high">59.67%</span></td>
+                        <td class="number"><span class="nps">5.55</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3 dias</span></td>
+                        <td class="number">646</td>
+                        <td class="number"><span class="medium">75.39%</span></td>
+                        <td class="number"><span class="nps">4.58</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4 dias</span></td>
+                        <td class="number">525</td>
+                        <td class="number"><span class="low">89.71%</span></td>
+                        <td class="number"><span class="nps">3.44</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">5+ dias</span></td>
+                        <td class="number">437</td>
+                        <td class="number"><span class="low">97.25%</span></td>
+                        <td class="number"><span class="nps">2.00</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Tempo de Entrega</td>
+                        <td><span class="faixa">2-4 dias</span></td>
+                        <td class="number">386</td>
+                        <td class="number"><span class="medium">75.39%</span></td>
+                        <td class="number"><span class="nps">4.29</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4-6 dias</span></td>
+                        <td class="number">387</td>
+                        <td class="number"><span class="medium">75.45%</span></td>
+                        <td class="number"><span class="nps">4.34</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">6-8 dias</span></td>
+                        <td class="number">365</td>
+                        <td class="number"><span class="medium">72.05%</span></td>
+                        <td class="number"><span class="nps">4.54</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">8+ dias</span></td>
+                        <td class="number">757</td>
+                        <td class="number"><span class="medium">73.98%</span></td>
+                        <td class="number"><span class="nps">4.39</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Tentativas de Entrega</td>
+                        <td><span class="faixa">2 tentativas</span></td>
+                        <td class="number">824</td>
+                        <td class="number"><span class="medium">74.39%</span></td>
+                        <td class="number"><span class="nps">4.35</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3 tentativas</span></td>
+                        <td class="number">838</td>
+                        <td class="number"><span class="medium">76.13%</span></td>
+                        <td class="number"><span class="nps">4.26</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4 tentativas</span></td>
+                        <td class="number">838</td>
+                        <td class="number"><span class="medium">71.6%</span></td>
+                        <td class="number"><span class="nps">4.52</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dimension-section">
+            <div class="dimension-title atendimento">
+                <span class="dimension-icon">💬</span>
+                <span>ATENDIMENTO</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Faixa</th>
+                        <th class="number">Qtd</th>
+                        <th class="number">Taxa Detração</th>
+                        <th class="number">NPS Médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="metric-name">Qtd de Reclamações</td>
+                        <td><span class="faixa">1-2 reclamações</span></td>
+                        <td class="number">145</td>
+                        <td class="number"><span class="high">7.59%</span></td>
+                        <td class="number"><span class="nps">7.89</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3-4 reclamações</span></td>
+                        <td class="number">784</td>
+                        <td class="number"><span class="high">59.06%</span></td>
+                        <td class="number"><span class="nps">5.31</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">5-6 reclamações</span></td>
+                        <td class="number">1,044</td>
+                        <td class="number"><span class="medium">84.2%</span></td>
+                        <td class="number"><span class="nps">3.98</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">7-8 reclamações</span></td>
+                        <td class="number">435</td>
+                        <td class="number"><span class="low">93.56%</span></td>
+                        <td class="number"><span class="nps">2.97</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">9+ reclamações</span></td>
+                        <td class="number">92</td>
+                        <td class="number"><span class="low">98.91%</span></td>
+                        <td class="number"><span class="nps">2.14</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Tempo de Resolução</td>
+                        <td><span class="faixa">0-3 dias</span></td>
+                        <td class="number">629</td>
+                        <td class="number"><span class="high">64.23%</span></td>
+                        <td class="number"><span class="nps">5.04</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3-6 dias</span></td>
+                        <td class="number">619</td>
+                        <td class="number"><span class="medium">73.18%</span></td>
+                        <td class="number"><span class="nps">4.51</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">6-9 dias</span></td>
+                        <td class="number">637</td>
+                        <td class="number"><span class="medium">77.39%</span></td>
+                        <td class="number"><span class="nps">4.18</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">9+ dias</span></td>
+                        <td class="number">615</td>
+                        <td class="number"><span class="medium">81.46%</span></td>
+                        <td class="number"><span class="nps">3.78</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Contatos com CS</td>
+                        <td><span class="faixa">1 contato</span></td>
+                        <td class="number">554</td>
+                        <td class="number"><span class="high">59.21%</span></td>
+                        <td class="number"><span class="nps">5.54</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">2 contatos</span></td>
+                        <td class="number">816</td>
+                        <td class="number"><span class="medium">70.34%</span></td>
+                        <td class="number"><span class="nps">4.66</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">3 contatos</span></td>
+                        <td class="number">640</td>
+                        <td class="number"><span class="medium">79.06%</span></td>
+                        <td class="number"><span class="nps">4.12</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">4-5 contatos</span></td>
+                        <td class="number">490</td>
+                        <td class="number"><span class="low">90.41%</span></td>
+                        <td class="number"><span class="nps">2.94</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dimension-section">
+            <div class="dimension-title score">
+                <span class="dimension-icon">⭐</span>
+                <span>SCORE</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Faixa</th>
+                        <th class="number">Qtd</th>
+                        <th class="number">Taxa Detração</th>
+                        <th class="number">NPS Médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="metric-name">Categoria NPS</td>
+                        <td><span class="faixa">Detrator (0-6)</span></td>
+                        <td class="number">1,851</td>
+                        <td class="number">-</td>
+                        <td class="number"><span class="nps">3.26</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Neutro (7-8)</span></td>
+                        <td class="number">448</td>
+                        <td class="number">-</td>
+                        <td class="number"><span class="nps">6.89</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Promotor (9-10)</span></td>
+                        <td class="number">201</td>
+                        <td class="number">-</td>
+                        <td class="number"><span class="nps">9.10</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">CSAT Interno</td>
+                        <td><span class="faixa">Baixo (0-4)</span></td>
+                        <td class="number">1,643</td>
+                        <td class="number"><span class="low">85.15%</span></td>
+                        <td class="number"><span class="nps">3.59</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Médio (5-6)</span></td>
+                        <td class="number">535</td>
+                        <td class="number"><span class="high">63.55%</span></td>
+                        <td class="number"><span class="nps">5.32</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Alto (7-8)</span></td>
+                        <td class="number">273</td>
+                        <td class="number"><span class="high">38.83%</span></td>
+                        <td class="number"><span class="nps">6.61</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Muito Alto (9-10)</span></td>
+                        <td class="number">49</td>
+                        <td class="number"><span class="high">12.24%</span></td>
+                        <td class="number"><span class="nps">8.18</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name">Recompra 30 dias</td>
+                        <td><span class="faixa">Sem recompra (30d)</span></td>
+                        <td class="number">2,282</td>
+                        <td class="number"><span class="medium">81.11%</span></td>
+                        <td class="number"><span class="nps">3.94</span></td>
+                    </tr>
+
+                    <tr>
+                        <td class="metric-name"></td>
+                        <td><span class="faixa">Com recompra (30d)</span></td>
+                        <td class="number">218</td>
+                        <td class="number"><span class="high">0.0%</span></td>
+                        <td class="number"><span class="nps">9.01</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Relatório gerado automaticamente a partir dos dados processados.</p>
+            <p>Base: 2.500 transações | Período: 2024-2025 | Fonte: E-commerce</p>
+        </div>
+        </div>
+    </body>
+    </html>
