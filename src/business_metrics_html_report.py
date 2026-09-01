@@ -256,7 +256,7 @@ def generate_html_metrics_table(csv_path: Path = None, output_path: Path = None)
                     </tr>
                 </thead>
                 <tbody>
-        """
+            """
 
         for metric in dim_data["Métrica"].unique():
             metric_data = dim_data[dim_data["Métrica"] == metric]
@@ -303,7 +303,7 @@ def generate_html_metrics_table(csv_path: Path = None, output_path: Path = None)
                         <td class="number">{detration_value}</td>
                         <td class="number">{nps_value}</td>
                     </tr>
-                """
+                    """
 
         html += """
                 </tbody>
