@@ -19,4 +19,5 @@ repos:
     hooks:
       - id: flake8
         # Argumentos para usar as configurações definidas no setup.cfg
-        args: [--config=setup.cfg, src, tests]
+        args: [--config=setup.cfg]
+        files: ^(src|tests)/.*\.py$
