@@ -210,6 +210,7 @@ def plot_spearman_correlation_matrix(df: pd.DataFrame, save_path: Path) -> None:
         "customer_service_contacts",
         "resolution_time_days",
         "delivery_time_days",
+        "delivery_attempts",
         "customer_region_code",
         "order_value_q",
         "freight_value_q",
@@ -399,6 +400,147 @@ def plot_order_structure_analysis(df: pd.DataFrame, save_path: Path) -> None:
     plt.close()
 
 
+def plot_target_distribution(df: pd.DataFrame, save_path: Path) -> None:
+    """Gera o gráfico de pizza com a proporção de detratores e não detratores."""
+    set_professional_style()
+
+    if "is_detractor" not in df.columns:
+        df = df.copy()
+        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+
+    contagem = df["is_detractor"].value_counts().reindex([0, 1]).fillna(0)
+    values = [int(contagem.get(0, 0)), int(contagem.get(1, 0))]
+    labels = ["Não detrator", "Detrator"]
+    total = sum(values)
+    pct = [v / total * 100 if total else 0 for v in values]
+    pie_labels = []
+    for label, value, percentage in zip(labels, values, pct):
+        pie_labels.append(
+            "{label}\n{value} ({percentage:.1f}%)".format(
+                label=label,
+                value=value,
+                percentage=percentage,
+            )
+        )
+
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.pie(
+        values,
+        labels=pie_labels,
+        startangle=90,
+        counterclock=True,
+        autopct=None,
+        wedgeprops={"edgecolor": "white", "linewidth": 1.2},
+        colors=["#2ecc71", "#e74c3c"],
+    )
+    ax.set_title("Detrator vs. Não Detrator", fontweight="bold")
+    ax.axis("equal")
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close()
+
+
+def plot_detraction_by_metric(
+    df: pd.DataFrame,
+    column: str,
+    save_path: Path,
+    title: str,
+    x_label: str,
+    rupture_value: float | None = None,
+    rupture_label: str | None = None,
+    y_limit: float = 105,
+) -> None:
+    """Gera um mapeamento de colapso por uma métrica operacional."""
+    set_professional_style()
+
+    if "is_detractor" not in df.columns:
+        df = df.copy()
+        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+
+    metric_table = df.groupby(column)["is_detractor"].agg(["count", "mean"])
+    metric_table["mean"] = metric_table["mean"] * 100
+    metric_table.columns = ["Total de Pedidos", "Taxa de Detração (%)"]
+
+    plt.figure(figsize=(10, 5))
+    if rupture_value is not None:
+        plt.axvline(
+            x=rupture_value,
+            color="#c0392b",
+            linestyle=":",
+            linewidth=2,
+            label=rupture_label,
+        )
+        if rupture_label:
+            plt.legend()
+
+    plt.title(title, fontweight="bold", pad=15)
+    plt.xlabel(x_label)
+    plt.ylabel("Taxa de Detração (%)")
+    plt.ylim(0, y_limit)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close()
+
+
+def plot_detraction_by_resolution_time(df: pd.DataFrame, save_path: Path) -> None:
+    """Mapa da detração por tempo de resolução."""
+    plot_detraction_by_metric(
+        df,
+        "resolution_time_days",
+        save_path,
+        "Tempo de Resolução vs. Taxa de Detração",
+        "Tempo de Resolução (resolution_time_days)",
+    )
+
+
+def plot_detraction_by_delivery_time(df: pd.DataFrame, save_path: Path) -> None:
+    """Mapa da detração por tempo total de entrega."""
+    plot_detraction_by_metric(
+        df,
+        "delivery_time_days",
+        save_path,
+        "Tempo da Entrega vs. Taxa de Detração",
+        "Tempo da Entrega (delivery_time_days)",
+    )
+
+
+def plot_detraction_by_delivery_attempts(df: pd.DataFrame, save_path: Path) -> None:
+    """Mapa da detração por tentativas de entrega."""
+    plot_detraction_by_metric(
+        df,
+        "delivery_attempts",
+        save_path,
+        "Tentativas de Entrega vs. Taxa de Detração",
+        "Tentativas de Entrega (delivery_attempts)",
+    )
+
+
+def plot_detraction_by_customer_service_contacts(
+    df: pd.DataFrame, save_path: Path
+) -> None:
+    """Mapa da detração por quantidade de contatos do atendimento."""
+    plot_detraction_by_metric(
+        df,
+        "customer_service_contacts",
+        save_path,
+        "Qtd. de Contatos (CS) vs. Taxa de Detração",
+        "Qtd. de Contatos (customer_service_contacts)",
+    )
+
+
+def plot_detraction_by_complaints_count(df: pd.DataFrame, save_path: Path) -> None:
+    """Mapa da detração por número de reclamações."""
+    plot_detraction_by_metric(
+        df,
+        "complaints_count",
+        save_path,
+        "Quantidade de Reclamações vs. Taxa de Detração",
+        "Reclamações (complaints_count)",
+        rupture_value=4,
+        rupture_label="Ponto de Ruptura: (4 reclamações)",
+    )
+
+
 if __name__ == "__main__":
     project_root = Path(__file__).resolve().parent.parent
     data_path = project_root / "data" / "processed" / "processed_nps_data.csv"
@@ -412,8 +554,24 @@ if __name__ == "__main__":
 
     print("Iniciando geração de gráficos em reports/figures/...")
 
+    plot_target_distribution(df_raw, figures_dir / "target_distribution.png")
     plot_nps_distribution(df_raw, figures_dir / "nps_distribution.png")
     plot_detraction_by_delay(df_raw, figures_dir / "detraction_rate_by_delay.png")
+    plot_detraction_by_resolution_time(
+        df_raw, figures_dir / "detraction_rate_by_resolution_time.png"
+    )
+    plot_detraction_by_delivery_time(
+        df_raw, figures_dir / "detraction_rate_by_delivery_time.png"
+    )
+    plot_detraction_by_delivery_attempts(
+        df_raw, figures_dir / "detraction_rate_by_delivery_attempts.png"
+    )
+    plot_detraction_by_customer_service_contacts(
+        df_raw, figures_dir / "detraction_rate_by_customer_service_contacts.png"
+    )
+    plot_detraction_by_complaints_count(
+        df_raw, figures_dir / "detraction_rate_by_complaints_count.png"
+    )
     plot_delivery_time_boxplot(df_raw, figures_dir / "delivery_delay_boxplot.png")
     plot_spearman_correlation_matrix(
         df_raw, figures_dir / "spearman_correlation_matrix.png"

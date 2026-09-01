@@ -4,10 +4,17 @@ import pytest
 from src.plots import (
     plot_delivery_time_boxplot,
     plot_detraction_by_delay,
+    plot_detraction_by_complaints_count,
+    plot_detraction_by_customer_service_contacts,
+    plot_detraction_by_delivery_attempts,
+    plot_detraction_by_delivery_time,
+    plot_detraction_by_metric,
     plot_detraction_by_region,
+    plot_detraction_by_resolution_time,
     plot_nps_distribution,
     plot_order_structure_analysis,
     plot_spearman_correlation_matrix,
+    plot_target_distribution,
     prepare_order_structure_features,
 )
 
@@ -16,7 +23,13 @@ from src.plots import (
     "plot_function",
     [
         plot_nps_distribution,
+        plot_target_distribution,
         plot_detraction_by_delay,
+        plot_detraction_by_resolution_time,
+        plot_detraction_by_delivery_time,
+        plot_detraction_by_delivery_attempts,
+        plot_detraction_by_customer_service_contacts,
+        plot_detraction_by_complaints_count,
         plot_delivery_time_boxplot,
         plot_spearman_correlation_matrix,
         plot_detraction_by_region,
@@ -27,6 +40,26 @@ def test_plot_functions_save_non_empty_png(sample_dataframe, tmp_path, plot_func
     output_path = tmp_path / f"{plot_function.__name__}.png"
 
     plot_function(sample_dataframe, output_path)
+
+    assert output_path.exists()
+    assert output_path.stat().st_size > 0
+    assert plt.get_fignums() == []
+
+
+def test_plot_detraction_by_metric_supports_custom_breakpoint(
+    sample_dataframe, tmp_path
+):
+    output_path = tmp_path / "detraction_by_metric_custom.png"
+
+    plot_detraction_by_metric(
+        sample_dataframe,
+        "complaints_count",
+        output_path,
+        "Test Metric Breakdown",
+        "Complaints Count",
+        rupture_value=2,
+        rupture_label="Ponto de Ruptura: (2 reclamações)",
+    )
 
     assert output_path.exists()
     assert output_path.stat().st_size > 0
