@@ -34,73 +34,67 @@ A apresentação do storytelling do projeto está disponível em [docs/apresenta
 
 ## 🗂️ 2. Estrutura de Pastas do Projeto
 
-O repositório está organizado segundo os padrões mais consolidados de arquitetura de projetos Python e MLOps:
+O repositório está organizado da seguinte forma:
 
 ```text
-├── LICENSE                                 # Licença do projeto
-├── Makefile                                # Automação de ambiente, lint, testes e pipeline
-├── README.md                               # Visão geral do projeto e guia principal
-├── pyproject.toml                          # Metadados do projeto e configuração de ferramentas
-├── setup.cfg                               # Configurações do linter e estilo do código
-├── requirements.txt                        # Dependências do ambiente Python
-├── .gitignore                              # Arquivos e diretórios ignorados pelo Git
-├── .pre-commit-config.yaml                 # Hooks de qualidade antes do commit
-│
-├── data                                    # Dados brutos e artefatos gerados
-│   ├── raw                                 # Base original do desafio
-│   ├── interim                             # Dados intermediários de pré-processamento
-│   ├── processed                           # Dados finais e bases escoradas
+project/
+├── data/
+│   ├── interim/
+│   ├── processed/
 │   │   ├── processed_nps_data.csv
 │   │   └── scored_orders.csv
-│   └── external                            # Fontes complementares e dados externos
-│
-├── docs                                    # Documentação narrativa e materiais de apoio
-│   ├── analise_negocio.md                  # Diagnóstico do problema e contexto de negócio
-│   ├── analise_exploratoria_dados.md       # EDA, testes estatísticos e achados operacionais
-│   ├── avaliacao_modelos_e_desempenho.md   # Benchmark e desempenho dos modelos
-│   ├── estrategias_logistica_e_atendimento.md # Estratégia operacional para logística e atendimento
-│   ├── apresentacao_storytelling.pdf       # Apresentação executiva do case
-│
-├── models                                  # Modelos serializados treinados
+│   └── raw/
+│       └── desafio_nps_fase_1.csv
+├── docs/
+│   ├── analise_negocio.md
+│   ├── analise_exploratoria_dados.md
+│   ├── avaliacao_modelos_e_desempenho.md
+│   ├── estrategias_logistica_e_atendimento.md
+│   └── apresentacao_storytelling.pdf
+├── models/
 │   └── detractor_classifier.joblib
-│
-├── notebooks                               # Notebooks de exploração e experimentação
+├── notebooks/
 │   ├── aed_nps.ipynb
-│   ├── manipulacao_dataset.ipynb
-│   ├── pre_processamento.ipynb
 │   ├── avaliacao_modelos.ipynb
-│   └── predicao.ipynb
-│
-├── reports                                 # Artefatos e métricas geradas pela análise
-│   ├── model_metrics.csv
+│   ├── manipulacao_dataset.ipynb
+│   ├── predicao.ipynb
+│   └── pre_processamento.ipynb
+├── reports/
+│   ├── business_metrics.csv
+│   ├── business_metrics.html
+│   ├── figures/
 │   ├── model_cv_metrics.csv
 │   ├── model_feature_importance.csv
-│   └── figures/                            # Gráficos e visualizações geradas
-│       ├── delivery_delay_boxplot.png
-│       ├── detraction_by_region.png
-│       ├── detraction_rate_by_delay.png
-│       ├── nps_distribution.png
-│       └── spearman_correlation_matrix.png
-│
-├── src                                     # Código-fonte modular do projeto
+│   └── model_metrics.csv
+├── src/
 │   ├── __init__.py
+│   ├── business_metrics.py
+│   ├── business_metrics_html_report.py
 │   ├── config.py
 │   ├── dataset.py
 │   ├── features.py
-│   ├── plots.py
-│   └── modeling/
-│       ├── __init__.py
-│       ├── train.py
-│       └── predict.py
-│
-├── tests                                   # Testes unitários e de integração
+│   ├── modeling/
+│   │   ├── __init__.py
+│   │   ├── predict.py
+│   │   └── train.py
+│   └── plots.py
+├── tests/
 │   ├── conftest.py
-│   ├── test_data.py
+│   ├── test_business_metrics.py
+│   ├── test_dataset.py
 │   ├── test_features.py
 │   ├── test_plots.py
 │   ├── test_predict.py
 │   └── test_train.py
-│
+├── .gitignore
+├── .pre-commit-config.yaml
+├── LICENSE
+├── Makefile
+├── pyproject.toml
+├── README.md
+├── requirements.txt
+├── setup.cfg
+└── .venv/   # ambiente local, não versionado
 ```
 
 ---

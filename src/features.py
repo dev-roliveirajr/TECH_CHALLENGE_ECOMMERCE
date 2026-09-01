@@ -6,12 +6,17 @@ Módulo de Engenharia de Features e Pré-processamento do Projeto NPS Preditivo.
 """
 
 import logging
+import sys
+from pathlib import Path
+
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from src import config
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src import config  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

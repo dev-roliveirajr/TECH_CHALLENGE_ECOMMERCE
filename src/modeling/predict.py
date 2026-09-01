@@ -90,7 +90,7 @@ def run_inference(data_path: Path, model_path: Path, output_path: Path) -> pd.Da
 
     # Exibir resumo das faixas de risco geradas
     risk_summary = df_scored["risk_band"].value_counts()
-    logger.info("Distribuição de Faixas de Risco geradas:", risk_summary)
+    logger.info("Distribuição de Faixas de Risco geradas: %s", risk_summary)
 
     # 6. Salvar base pontuada
     output_path.parent.mkdir(parents=True, exist_ok=True)

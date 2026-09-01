@@ -66,6 +66,30 @@ def test_plot_detraction_by_metric_supports_custom_breakpoint(
     assert plt.get_fignums() == []
 
 
+def test_plot_detraction_by_metric_draws_curve(sample_dataframe, tmp_path, monkeypatch):
+    output_path = tmp_path / "detraction_by_metric_curve.png"
+    plot_calls = []
+    original_plot = plt.plot
+
+    def spy_plot(*args, **kwargs):
+        plot_calls.append((args, kwargs))
+        return original_plot(*args, **kwargs)
+
+    monkeypatch.setattr(plt, "plot", spy_plot)
+
+    plot_detraction_by_metric(
+        sample_dataframe,
+        "complaints_count",
+        output_path,
+        "Test Metric Breakdown",
+        "Complaints Count",
+    )
+
+    assert output_path.exists()
+    assert plot_calls
+    assert plt.get_fignums() == []
+
+
 def test_prepare_order_structure_features_creates_region_and_quartile_columns(
     sample_dataframe,
 ):

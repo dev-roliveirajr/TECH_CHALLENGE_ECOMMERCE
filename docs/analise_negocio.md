@@ -110,7 +110,9 @@ Na estrutura do pedido, os valores apresentaram pouca variação no NPS entre as
 
 A comparação regional mostrou que a média de NPS e a proporção de detratores são muito semelhantes entre as regiões.
 
-## 5. Indicadores complementares
+🔍 Para uma visualização mais detalhada dessas medidas, consulte o relatório em `reports/business_metrics.html`.
+
+## 6. Indicadores complementares
 
 Para posicionar os resultados em relação ao mercado, recomenda-se acompanhar:
 
@@ -121,7 +123,7 @@ Para posicionar os resultados em relação ao mercado, recomenda-se acompanhar:
 
 Também são úteis indicadores internos de recompra, retenção, devoluções, cancelamentos, CSAT, taxa de resposta e custo de atendimento. Esses benchmarks externos não foram incorporados à base atual.
 
-## 6. Ações sugeridas
+## 7. Ações sugeridas
 
 As ações abaixo são propostas para uma futura implantação e usam os limiares observados ou já definidos no projeto como ponto de partida:
 
@@ -137,7 +139,7 @@ As ações abaixo são propostas para uma futura implantação e usam os limiare
 
 Essas ações são recomendações para investigação e teste. O projeto não implementa integrações com CRM, alertas, compensações ou logística, e a análise histórica não demonstra que essas intervenções causarão aumento do NPS.
 
-## 7. Limitações
+## 8. Limitações
 
 - A base não contém datas, SLA prometido, transportadora, categoria de produto, motivo do contato, devolução, cancelamento, taxa de resposta ou custo de intervenção.
 - Há um pedido por cliente, o que limita análises de comportamento recorrente individual.
@@ -145,6 +147,6 @@ Essas ações são recomendações para investigação e teste. O projeto não i
 - As probabilidades e os limiares de risco ainda não passaram por calibração específica de custo-benefício.
 - O viés de autoseleção da pesquisa pode limitar a generalização para clientes que não responderam ao NPS.
 
-## 8. Conclusão
+## 9. Conclusão
 
 Na amostra analisada, atrasos, reclamações e tempo de resolução apresentaram relação mais evidente com a detração do que as variáveis demográficas avaliadas. A classificação binária pode apoiar uma fila de priorização, desde que seja validada com dados novos, supervisão humana e experimento controlado.

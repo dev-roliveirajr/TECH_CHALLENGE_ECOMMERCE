@@ -121,6 +121,8 @@ A classificação clássica do NPS foi observada da seguinte forma:
 - **Neutros (7 a 8):** 21,56%
 - **Promotores (9 a 10):** 4,40%
 
+🔍 Para visualizar uma análise mais detalhada sobre a composição do NPS, consulte o relatório em `reports/business_metrics.html`.
+
 ### 2.6. Variável alvo: `is_detractor`
 
 A partir da nota de NPS, foi derivada a variável alvo binária `is_detractor`, definida como:

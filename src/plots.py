@@ -4,15 +4,21 @@ Contém funções modularizadas para gerar visualizações profissionais e cient
 sobre os fatores operacionais e de atrito que impactam o NPS.
 """
 
-import matplotlib
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import matplotlib  # noqa: E402
 
 matplotlib.use("Agg")  # Configura modo headless para evitar erros de display
 import matplotlib.pyplot as plt  # noqa: E402
 import seaborn as sns  # noqa: E402
 import pandas as pd  # noqa: E402
 import numpy as np  # noqa: E402
-from pathlib import Path  # noqa: E402
 from scipy import stats  # noqa: E402
+
+from src import dataset  # noqa: E402
 
 
 def set_professional_style():
@@ -27,11 +33,24 @@ def set_professional_style():
     plt.rcParams["ytick.labelsize"] = 10
 
 
+def ensure_is_detractor(df: pd.DataFrame) -> pd.DataFrame:
+    """Garante que a variável alvo binária exista antes da criação dos gráficos."""
+    df = df.copy()
+    if "is_detractor" not in df.columns:
+        if "nps_score" not in df.columns:
+            raise ValueError(
+                "A coluna 'nps_score' é obrigatória para criar 'is_detractor'."
+            )
+        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+    return df
+
+
 def plot_nps_distribution(df: pd.DataFrame, save_path: Path) -> None:
     """
     Gera o gráfico de distribuição das notas de NPS e realiza o QQ-Plot
     demonstrando visualmente a não normalidade das notas (rejeição de Shapiro-Wilk).
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -80,12 +99,8 @@ def plot_detraction_by_delay(df: pd.DataFrame, save_path: Path) -> None:
     Plota a taxa de detração por dias de atraso logístico,
     evidenciando graficamente o ponto de colapso de experiência.
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    # Certifica-se de ter a target
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     # Agrupa por dias de atraso
     delay_groups = df.groupby("delivery_delay_days")["is_detractor"].mean() * 100
@@ -145,11 +160,8 @@ def plot_delivery_time_boxplot(df: pd.DataFrame, save_path: Path) -> None:
     Gera diagramas de caixa (Boxplots) comparando o comportamento de
     atraso (delivery_delay_days) entre Detratores e Não Detratores.
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     plt.figure(figsize=(9, 6))
 
@@ -193,11 +205,8 @@ def plot_spearman_correlation_matrix(df: pd.DataFrame, save_path: Path) -> None:
     Gera o heatmap de correlação não linear de Spearman entre as variáveis numéricas
     e a flag de detração, provando estatisticamente as causas do atrito.
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     df_corr = prepare_order_structure_features(df)
 
@@ -290,11 +299,8 @@ def plot_detraction_by_region(df: pd.DataFrame, save_path: Path) -> None:
     de detratores entre as diferentes regiões e provando visualmente o teste de
     Qui-Quadrado.
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     # Cria tabela de contingência percentual
     contingency = (
@@ -349,11 +355,8 @@ def plot_order_structure_analysis(df: pd.DataFrame, save_path: Path) -> None:
     """Gera uma visão comparativa da detração por faixa de valor
     do pedido, frete e parcelas.
     """
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     df_plot = prepare_order_structure_features(df)
 
@@ -402,11 +405,8 @@ def plot_order_structure_analysis(df: pd.DataFrame, save_path: Path) -> None:
 
 def plot_target_distribution(df: pd.DataFrame, save_path: Path) -> None:
     """Gera o gráfico de pizza com a proporção de detratores e não detratores."""
+    df = ensure_is_detractor(df)
     set_professional_style()
-
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
 
     contagem = df["is_detractor"].value_counts().reindex([0, 1]).fillna(0)
     values = [int(contagem.get(0, 0)), int(contagem.get(1, 0))]
@@ -451,17 +451,27 @@ def plot_detraction_by_metric(
     y_limit: float = 105,
 ) -> None:
     """Gera um mapeamento de colapso por uma métrica operacional."""
+    df = ensure_is_detractor(df)
     set_professional_style()
 
-    if "is_detractor" not in df.columns:
-        df = df.copy()
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
-
-    metric_table = df.groupby(column)["is_detractor"].agg(["count", "mean"])
-    metric_table["mean"] = metric_table["mean"] * 100
-    metric_table.columns = ["Total de Pedidos", "Taxa de Detração (%)"]
+    metric_table = (
+        df.groupby(column, sort=True)["is_detractor"]
+        .mean()
+        .mul(100)
+        .reset_index()
+        .rename(columns={column: x_label, "is_detractor": "Taxa de Detração (%)"})
+    )
 
     plt.figure(figsize=(10, 5))
+    plt.plot(
+        metric_table[x_label],
+        metric_table["Taxa de Detração (%)"],
+        color="#e74c3c",
+        linewidth=2.5,
+        marker="o",
+        markersize=5,
+    )
+
     if rupture_value is not None:
         plt.axvline(
             x=rupture_value,
@@ -543,14 +553,26 @@ def plot_detraction_by_complaints_count(df: pd.DataFrame, save_path: Path) -> No
 
 if __name__ == "__main__":
     project_root = Path(__file__).resolve().parent.parent
-    data_path = project_root / "data" / "processed" / "processed_nps_data.csv"
+    raw_path = project_root / "data" / "raw" / "desafio_nps_fase_1.csv"
     figures_dir = project_root / "reports" / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"Arquivo de dados não encontrado: {data_path}")
+    if not raw_path.exists():
+        raise FileNotFoundError(f"Arquivo de dados brutos não encontrado: {raw_path}")
 
-    df_raw = pd.read_csv(data_path)
+    df_raw = dataset.load_raw_data(raw_path)
+    dataset.validate_data(df_raw)
+    df_raw = dataset.winsorize_outlier_columns(
+        df_raw,
+        columns=[
+            "customer_service_contacts",
+            "delivery_delay_days",
+            "complaints_count",
+        ],
+    )
+    df_raw = dataset.binarize_target(df_raw)
+    df_raw = dataset.create_business_risk_features(df_raw)
+    df_raw = ensure_is_detractor(df_raw)
 
     print("Iniciando geração de gráficos em reports/figures/...")
 
