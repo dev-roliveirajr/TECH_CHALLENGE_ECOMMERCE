@@ -207,23 +207,24 @@ def generate_html_metrics_table(csv_path: Path = None, output_path: Path = None)
     </style>
     """
 
-    html = f"""
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Métricas de Negócio - E-commerce NPS</title>
-        {css}
-    </head>
-    <body>
-        <div class="container">
-            <h1>📊 Métricas de Negócio - Base de Dados E-commerce</h1>
-            <p class="subtitle">
-                Análise estruturada em 5 dimensões: Comprador, Pedido,
-                Logística, Atendimento e Score
-            </p>
-    """
+    html = (
+        "<!DOCTYPE html>\n"
+        '<html lang="pt-BR">\n'
+        "<head>\n"
+        '    <meta charset="UTF-8">\n'
+        '    <meta name="viewport" content="width=device-width,\n'
+        '        initial-scale=1.0">\n'
+        "    <title>Métricas de Negócio - E-commerce NPS</title>\n"
+        f"{css}\n"
+        "</head>\n"
+        "<body>\n"
+        '    <div class="container">\n'
+        "        <h1>📊 Métricas de Negócio - Base de Dados E-commerce</h1>\n"
+        '        <p class="subtitle">\n'
+        "            Análise estruturada em 5 dimensões: Comprador, Pedido,\n"
+        "            Logística, Atendimento e Score\n"
+        "        </p>\n"
+    )
 
     dimensions = {
         "Comprador": ("comprador", "👤"),
@@ -236,27 +237,27 @@ def generate_html_metrics_table(csv_path: Path = None, output_path: Path = None)
     for dim_name, (dim_class, icon) in dimensions.items():
         dim_data = df[df["Dimensão"] == dim_name].copy()
 
-        if len(dim_data) == 0:
+        if dim_data.empty:
             continue
 
-        html += f"""
-        <div class="dimension-section">
-            <div class="dimension-title {dim_class}">
-                <span class="dimension-icon">{icon}</span>
-                <span>{dim_name.upper()}</span>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Métrica</th>
-                        <th>Faixa</th>
-                        <th class="number">Qtd</th>
-                        <th class="number">Taxa Detração</th>
-                        <th class="number">NPS Médio</th>
-                    </tr>
-                </thead>
-                <tbody>
-            """
+        html += (
+            '<div class="dimension-section">\n'
+            f'    <div class="dimension-title {dim_class}">\n'
+            f'        <span class="dimension-icon">{icon}</span>\n'
+            f"        <span>{dim_name.upper()}</span>\n"
+            "    </div>\n"
+            "    <table>\n"
+            "        <thead>\n"
+            "            <tr>\n"
+            "                <th>Métrica</th>\n"
+            "                <th>Faixa</th>\n"
+            '                <th class="number">Qtd</th>\n'
+            '                <th class="number">Taxa Detração</th>\n'
+            '                <th class="number">NPS Médio</th>\n'
+            "            </tr>\n"
+            "        </thead>\n"
+            "        <tbody>\n"
+        )
 
         for metric in dim_data["Métrica"].unique():
             metric_data = dim_data[dim_data["Métrica"] == metric]
@@ -278,48 +279,53 @@ def generate_html_metrics_table(csv_path: Path = None, output_path: Path = None)
                         else:
                             detration_class = "high"
                     detration_value = (
-                        f'<span class="{detration_class}">{row["Taxa Detração"]}</span>'
+                        f'<span class="{detration_class}">'
+                        f'{row["Taxa Detração"]}</span>'
                     )
                 else:
                     detration_value = "-"
 
-                nps_value = (
-                    f'<span class="nps">{row["NPS Médio"]:.2f}</span>'
-                    if pd.notna(row["NPS Médio"])
-                    else "-"
-                )
+                if pd.notna(row["NPS Médio"]):
+                    nps_value = f'<span class="nps">{row["NPS Médio"]:.2f}' "</span>"
+                else:
+                    nps_value = "-"
 
                 qtd = (
                     int(row["Qtd Clientes"])
                     if pd.notna(row["Qtd Clientes"])
-                    else int(row["Qtd Pedidos"]) if pd.notna(row["Qtd Pedidos"]) else 0
+                    else (
+                        int(row["Qtd Pedidos"]) if pd.notna(row["Qtd Pedidos"]) else 0
+                    )
                 )
 
-                html += f"""
-                    <tr>
-                        <td class="metric-name">{metric_display}</td>
-                        <td><span class="faixa">{row['Faixa']}</span></td>
-                        <td class="number">{qtd:,}</td>
-                        <td class="number">{detration_value}</td>
-                        <td class="number">{nps_value}</td>
-                    </tr>
-                    """
+                html += (
+                    "                    <tr>\n"
+                    '                        <td class="metric-name">'
+                    f"{metric_display}</td>\n"
+                    '                        <td><span class="faixa">'
+                    f"{row['Faixa']}</span></td>\n"
+                    '                        <td class="number">'
+                    f"{format(qtd, ',')}</td>\n"
+                    '                        <td class="number">'
+                    f"{detration_value}</td>\n"
+                    '                        <td class="number">'
+                    f"{nps_value}</td>\n"
+                    "                    </tr>\n"
+                )
 
-        html += """
-                </tbody>
-            </table>
-        </div>
-        """
+        html += "        </tbody>\n" "    </table>\n" "</div>\n"
 
-    html += """
-        <div class="footer">
-            <p>Relatório gerado automaticamente a partir dos dados processados.</p>
-            <p>Base: 2.500 transações | Período: 2024-2025 | Fonte: E-commerce</p>
-        </div>
-        </div>
-    </body>
-    </html>
-    """
+    html += (
+        '    <div class="footer">\n'
+        "        <p>Relatório gerado automaticamente a partir dos "
+        "dados processados.</p>\n"
+        "        <p>Base: 2.500 transações | Período: 2024-2025 | "
+        "Fonte: E-commerce</p>\n"
+        "    </div>\n"
+        "    </div>\n"
+        "</body>\n"
+        "</html>\n"
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
