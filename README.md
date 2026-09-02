@@ -28,7 +28,7 @@ O score preditivo pode apoiar a priorização operacional antes da coleta do NPS
 
 ### Apresentação do storytelling e vídeo
 
-A apresentação do storytelling do projeto está disponível em [docs/apresentacao_storytelling.pdf](docs/apresentacao_storytelling.pdf). O vídeo da apresentação será disponibilizado em "link do vídeo no YouTube", reunindo os principais achados, a solução preditiva e as recomendações de negócio do projeto.
+A apresentação do storytelling do projeto está disponível em [docs/apresentacao_storytelling.pdf](docs/apresentacao_storytelling.pdf). O vídeo da apresentação será disponibilizado em https://www.youtube.com/watch?v=xNCMMHDfKN8, reunindo os principais achados, a solução preditiva e as recomendações de negócio do projeto.
 
 ---
 
