@@ -108,18 +108,22 @@ Essa abordagem mantém a informação operacional relevante, reduzindo a influê
 
 ### 2.5. Composição do NPS (nps_score)
 
-A classificação clássica do NPS foi observada da seguinte forma:
+**Nota metodológica:** `nps_score` contém notas decimais; **2.075 das 2.500 notas são não inteiras**, portanto a classificação não pode assumir apenas valores inteiros. Neste projeto, considera-se detrator todo cliente com `nps_score < 7`. A divisão completa é: detrator (`score < 7`), neutro (`7 <= score < 9`) e promotor (`9 <= score <= 10`).
+
+Com a regra aplicada às notas decimais, a composição observada é:
 
 | Aspecto | Valor |
 | :--- | :---: |
 | Faixa de NPS | 0 a 10 |
 | Nota média | 4,379 |
 | Mediana da nota | 4,400 |
-| NPS observado | -69,64% |
+| NPS observado | -79,96% |
 
-- **Detratores (0 a 6):** 74,04%
-- **Neutros (7 a 8):** 21,56%
+- **Detratores (score < 7):** 84,36% (2.109 registros)
+- **Neutros (7 <= score < 9):** 11,24% (281 registros)
 - **Promotores (9 a 10):** 4,40%
+
+Há **258 notas entre 6 e 7** que eram classificadas incorretamente como não detratoras pela regra antiga `score <= 6`. Elas passam a integrar a classe detratora.
 
 🔍 Para visualizar uma análise mais detalhada sobre a composição do NPS, consulte o relatório em `reports/business_metrics.html`.
 
@@ -127,10 +131,10 @@ A classificação clássica do NPS foi observada da seguinte forma:
 
 A partir da nota de NPS, foi derivada a variável alvo binária `is_detractor`, definida como:
 
-- `1` quando `nps_score <= 6` (cliente detrator),
-- `0` quando `nps_score > 6` (cliente não detrator).
+- `1` quando `nps_score < 7` (cliente detrator),
+- `0` quando `nps_score >= 7` (cliente não detrator).
 
-Essa regra segue a classificação tradicional do NPS, em que notas de 0 a 6 são consideradas detratoras. A variável alvo permite comparar o comportamento operacional de clientes detratores e não detratores, além de orientar a etapa posterior de modelagem preditiva.
+Como a nota pode ser decimal, a condição `nps_score < 7` é necessária para incluir, por exemplo, notas 6,1 a 6,9 na classe detratora. A variável alvo permite comparar o comportamento operacional de clientes detratores e não detratores, além de orientar a etapa posterior de modelagem preditiva.
 
 ---
 
@@ -153,9 +157,9 @@ Um dos achados mais relevantes da análise exploratória é o comportamento não
 
 Os pontos mais importantes observados nesta amostra foram:
 
-- **sem atraso:** taxa de detração de 36,46%
-- **1 a 2 dias de atraso:** taxa de detração de 59,67% a 75,39%
-- **3 dias ou mais:** taxa de detração de 89,71% a 99,14%
+- **sem atraso:** taxa de detração de 51,62%
+- **1 a 2 dias de atraso:** taxa de detração de 51,62% a 73,98%, conforme o dia
+- **3 dias:** 87,93%; **4 dias:** 96,76%; **5 dias ou mais:** 99,54% de detração
 - **6 dias ou mais:** detração próxima a 100%
 
 Esse comportamento indica que a decisão operacional não deve ser guiada apenas pela média geral. Há um ponto de ruptura claro, em que a experiência do cliente muda de forma abrupta e a detração se acelera. Esse achado é importante porque coloca em evidência a necessidade de ações preventivas antes que o atraso ultrapasse um limite crítico.
@@ -201,33 +205,33 @@ Assumindo a não normalidade das notas, calculamos a correlação por postos de 
 
 | Variável Operacional | Correlação de Spearman ($r_s$) | Significado Prático |
 | :--- | :---: | :--- |
-| **`nps_score`** | $-0,7595$ | Correlação negativa forte, pois a target é derivada dessa variável. |
-| **`repeat_purchase_30d`** | $-0,5220$ | Associação negativa com a recompra observada. |
-| **`complaints_count`** | $+0,4527$ | Associação positiva com a detração. |
-| **`delivery_delay_days`** | $+0,4202$ | Associação positiva entre atraso e detração. |
-| **`csat_internal_score`** | $-0,4107$ | Associação negativa com a detração. |
-| **`customer_service_contacts`** | $+0,2418$ | Associação positiva moderada com o atrito. |
-| **`resolution_time_days`** | $+0,1509$ | Associação positiva fraca com o atrito. |
-| **`customer_region_code`** | $+0,0088$ | Associação praticamente nula com a detração. |
-| **`order_value_q`** | $-0,0282$ | Associação positiva fraca com o atrito. |
-| **`freight_value_q`** | $+0,0277$ | Associação positiva fraca com o atrito. |
-| **`payment_installments`** | $-0,0193$ | Associação praticamente nula com o atrito. |
+| **`nps_score`** | $-0,6293$ | Correlação negativa, pois a target é derivada dessa variável. |
+| **`repeat_purchase_30d`** | $-0,7178$ | Associação negativa com a recompra observada. |
+| **`complaints_count`** | $+0,3806$ | Associação positiva com a detração. |
+| **`delivery_delay_days`** | $+0,3853$ | Associação positiva entre atraso e detração. |
+| **`csat_internal_score`** | $-0,3706$ | Associação negativa com a detração. |
+| **`customer_service_contacts`** | $+0,2198$ | Associação positiva com o atrito. |
+| **`resolution_time_days`** | $+0,1406$ | Associação positiva fraca com o atrito. |
+| **`customer_region_code`** | $+0,0151$ | Associação praticamente nula com a detração. |
+| **`order_value_q`** | $-0,0340$ | Associação fraca com o atrito. |
+| **`freight_value_q`** | $+0,0228$ | Associação praticamente nula com o atrito. |
+| **`payment_installments`** | $-0,0192$ | Associação praticamente nula com o atrito. |
 
 ### C. Teste de Diferença de Médias de Mann-Whitney U (Atraso Logístico)
 Comparamos se os dias de atraso logístico (`delivery_delay_days`) dos detratores diferem significativamente dos não detratores:
 *   **Hipótese Nula ($H_0$):** A distribuição de dias de atraso é idêntica entre detratores e não detratores.
 *   **Hipótese Alternativa ($H_1$):** A distribuição de dias de atraso é diferente entre os dois grupos.
-*   **Resultado do Teste:** Estatística $U = 925.586,5$, **p-valor $= 6,0051 \times 10^{-98}$**.
-*   **Médias Observadas:** Detratores $= 2,534$ dias de atraso versus não detratores $= 1,197$ dias.
+*   **Resultado do Teste:** Estatística $U = 659.206$, **p-valor $= 1,1004 \times 10^{-82}$**.
+*   **Médias Observadas:** Detratores $= 2,405$ dias de atraso versus não detratores $= 0,959$ dias.
 *   **Conclusão Estatística:** Rejeitamos a hipótese nula com $p < 0,05$. Nesta amostra, o atraso médio foi maior entre detratores.
 
-*O teste de Mann-Whitney U aplicado ao tempo total de entrega (`delivery_time_days`) resultou em p-valor $= 0,556$. Nesta amostra, não foi identificada diferença estatisticamente significativa entre os grupos.*
+*O teste de Mann-Whitney U aplicado ao tempo total de entrega (`delivery_time_days`) resultou em p-valor $= 0,396$. Nesta amostra, não foi identificada diferença estatisticamente significativa entre os grupos.*
 
 ### D. Teste Qui-Quadrado de Independência (Isenção Geográfica)
 Avaliamos se a proporção de detratores difere por região geográfica (`customer_region`):
 *   **Hipótese Nula ($H_0$):** A região geográfica e o risco de detração são independentes.
 *   **Hipótese Alternativa ($H_1$):** Há associação entre a região e a detração.
-*   **Resultado do Teste:** Estatística $\\chi^2 = 0,6264$, **p-valor $= 0,9601$**, com $4$ graus de liberdade.
+*   **Resultado do Teste:** Estatística $\\chi^2 = 1,4417$, **p-valor $= 0,8369$**, com $4$ graus de liberdade.
 *   **Conclusão Estatística:** Como o p-valor é superior a $5\%$, não rejeitamos a hipótese nula. Nesta amostra, não foi identificada associação estatisticamente significativa entre região e detração.
 
 ### E. Teste Qui-Quadrado de Independência (Estrutura do Pedido)
@@ -236,19 +240,19 @@ Avaliamos se a proporção de detratores difere ao longo de faixas de valor do p
 #### E1. Valor do pedido (`order_value`)
 *   **Hipótese Nula ($H_0$):** O valor do pedido e o risco de detração são independentes.
 *   **Hipótese Alternativa ($H_1$):** Há associação entre valor do pedido e detração.
-*   **Resultado do Teste:** Estatística $\\chi^2 = 3,1695$, **p-valor $= 0,3662$**, com $3$ graus de liberdade.
+*   **Resultado do Teste:** Estatística $\\chi^2 = 4,6173$, **p-valor $= 0,2021$**, com $3$ graus de liberdade.
 *   **Conclusão Estatística:** Como o p-valor é maior que $5\%$, não rejeitamos a hipótese nula. Nesta amostra, o valor do pedido não apresentou associação estatisticamente significativa com a detração.
 
 #### E2. Valor do frete (`freight_value`)
 *   **Hipótese Nula ($H_0$):** O valor do frete e o risco de detração são independentes.
 *   **Hipótese Alternativa ($H_1$):** Há associação entre valor do frete e detração.
-*   **Resultado do Teste:** Estatística $\\chi^2 = 3,0885$, **p-valor $= 0,3782$**, com $3$ graus de liberdade.
+*   **Resultado do Teste:** Estatística $\\chi^2 = 4,8175$, **p-valor $= 0,1857$**, com $3$ graus de liberdade.
 *   **Conclusão Estatística:** Como o p-valor é maior que $5\%$, não rejeitamos a hipótese nula. Nesta amostra, o valor do frete também não apresentou associação estatisticamente significativa com a detração.
 
 #### E3. Número de parcelas (`payment_installments`)
 *   **Hipótese Nula ($H_0$):** O número de parcelas e o risco de detração são independentes.
 *   **Hipótese Alternativa ($H_1$):** Há associação entre número de parcelas e detração.
-*   **Resultado do Teste:** Estatística $\\chi^2 = 5,2401$, **p-valor $= 0,8746$**, com $10$ graus de liberdade.
+*   **Resultado do Teste:** Estatística $\\chi^2 = 4,2244$, **p-valor $= 0,9367$**, com $10$ graus de liberdade.
 *   **Conclusão Estatística:** Como o p-valor é maior que $5\%$, não rejeitamos a hipótese nula. Nesta amostra, a estrutura do parcelamento do pedido também não apresentou associação estatisticamente significativa com a detração.
 
 **Interpretação prática:** os componentes da estrutura do pedido, quando avaliados de forma isolada, não parecem explicar a variação do NPS de forma significativa nesta base. Em outras palavras, o principal motor de detração observado parece estar mais associado a fatores operacionais de entrega e atendimento do que ao valor do pedido, ao frete ou ao parcelamento.

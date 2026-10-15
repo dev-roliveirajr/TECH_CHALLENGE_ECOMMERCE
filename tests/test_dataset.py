@@ -58,6 +58,14 @@ def test_binarize_target_uses_nps_detractor_boundary(sample_dataframe):
     assert "is_detractor" not in sample_dataframe
 
 
+def test_binarize_target_classifies_decimal_scores_below_seven_as_detractors():
+    scores = pd.DataFrame({"nps_score": [6.0, 6.9, 7.0, 9.0, 10.0]})
+
+    result = binarize_target(scores)
+
+    assert result["is_detractor"].tolist() == [1, 1, 0, 0, 0]
+
+
 @pytest.mark.parametrize(
     "function, values, expected",
     [

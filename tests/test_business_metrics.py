@@ -54,12 +54,12 @@ def _make_business_dataframe():
             "customer_service_contacts": [0, 1, 2, 2, 3, 4, 5, 5, 6, 7, 8, 10],
             "resolution_time_days": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13],
             "complaints_count": [0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 9],
-            "nps_score": [2, 3, 5, 6, 7, 7, 8, 8, 9, 9, 10, 10],
+            "nps_score": [2, 3, 5, 6, 6.9, 7, 8, 8.9, 9, 9, 10, 10],
             "csat_internal_score": [3, 4, 5, 6, 7, 7, 8, 8, 9, 9, 10, 10],
             "repeat_purchase_30d": [0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
         }
     )
-    df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+    df["is_detractor"] = (df["nps_score"] < 7).astype(int)
     return df
 
 
@@ -101,6 +101,13 @@ def test_create_business_dimension_metrics_are_non_empty():
     assert set(logistics_metrics["Dimensão"]).issubset({"Logística"})
     assert set(support_metrics["Dimensão"]).issubset({"Atendimento"})
     assert set(score_metrics["Dimensão"]).issubset({"Score"})
+
+    nps_categories = score_metrics.loc[
+        score_metrics["Métrica"].eq("Categoria NPS"), ["Faixa", "Qtd Pedidos"]
+    ].set_index("Faixa")["Qtd Pedidos"]
+    assert nps_categories["Detrator (<7)"] == 5
+    assert nps_categories["Neutro (7-<9)"] == 3
+    assert nps_categories["Promotor (9-10)"] == 4
 
 
 def test_generate_business_metrics_report_saves_csv_and_includes_all_dimensions(

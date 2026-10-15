@@ -41,7 +41,7 @@ def ensure_is_detractor(df: pd.DataFrame) -> pd.DataFrame:
             raise ValueError(
                 "A coluna 'nps_score' é obrigatória para criar 'is_detractor'."
             )
-        df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+        df["is_detractor"] = (df["nps_score"] < 7).astype(int)
     return df
 
 

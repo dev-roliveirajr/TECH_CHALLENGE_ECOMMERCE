@@ -208,7 +208,7 @@ antes de criar o commit.
 
 ## 📊 6. Pipeline de Dados
 
-1. **Ingestão e Validação (`src/dataset.py`):** Carga do arquivo `desafio_nps_fase_1.csv` que você deve armazenar em `data/raw/` e binarização da target `is_detractor`.
+1. **Ingestão e Validação (`src/dataset.py`):** Carga do arquivo `desafio_nps_fase_1.csv` que você deve armazenar em `data/raw/` e binarização da target `is_detractor`. Como `nps_score` contém notas decimais, considera-se detrator todo valor **menor que 7** (sem arredondamento); `7 <= score < 9` é neutro e `score >= 9` é promotor.
 2. **Exploratory Data Analysis (EDA):** Identificação de pontos de colapso de atendimento e atraso logístico, com testes de hipótese paramétricos e não paramétricos via SciPy (correlação de Spearman, Mann-Whitney U, Qui-Quadrado).
 3. **Modelagem (`src/modeling/train.py`):** Treinamento com 80/20 train-test split, Stratified 5-Fold Cross Validation comparando algoritmos (Random Forest, Regressão Logística e Baselines).
 4. **Escoragem (`src/modeling/predict.py`):** Motor de pontuação ordenando os clientes em faixas de risco operacional:
@@ -225,12 +225,12 @@ No conjunto de holdout de teste, o pipeline de Regressão Logística apresentou:
 
 | Métrica | Resultado |
 | --- | ---: |
-| ROC-AUC | 0,8758 |
-| Average Precision | 0,9463 |
-| Accuracy | 0,8440 |
-| F1-score | 0,8984 |
-| Precisão | 0,8668 |
-| Recall | 0,9324 |
+| ROC-AUC | 0,8687 |
+| Average Precision | 0,9740 |
+| Accuracy | 0,8580 |
+| F1-score | 0,9190 |
+| Precisão | 0,8857 |
+| Recall | 0,9550 |
 
 Esses resultados são referências do artefato atualmente disponível. Um novo
 treinamento pode produzir pequenas variações.
@@ -248,7 +248,7 @@ Para garantir a reprodutibilidade e a operacionalização do **NPS Preditivo** e
 O ciclo de vida de treinamento do modelo preditivo foi estruturado em duas camadas complementares (Produção vs. Experimentação):
 
 1. **Via Script de Produção (`src/modeling/train.py`):**
-   * **Fluxo Oficial MLOps (Headless):** Este é o motor de produção automatizado. Ele carrega os dados processados e higienizados de `data/processed/processed_nps_data.csv`, faz o split de holdout estratificado 80/20 (para garantir o balanceamento crítico da classe detratora de **74,04%**), roda a Validação Cruzada Estratificada de 5 folds (Stratified 5-Fold CV) para auditar os classificadores e exporta o binário final consolidado com o pré-processador para `models/detractor_classifier.joblib`.
+    * **Fluxo Oficial MLOps (Headless):** Este é o motor de produção automatizado. Ele carrega os dados processados e higienizados de `data/processed/processed_nps_data.csv`, faz o split de holdout estratificado 80/20 (com proporção de detratores de **84,36%** na base atualmente analisada), roda a Validação Cruzada Estratificada de 5 folds (Stratified 5-Fold CV) para auditar os classificadores e exporta o binário final consolidado com o pré-processador para `models/detractor_classifier.joblib`.
    * **Execução via CLI Direta:**
      ```bash
          .venv/bin/python src/modeling/train.py
@@ -323,7 +323,7 @@ else:
 
 print("\n=== RESULTADO DO NPS PREDITIVO ===")
 print(f"-> Probabilidade Estimada de Detração: {probabilidade_detracao:.2%}")
-print(f"-> Classe Predita: {predicao_classe} ({'Detrator (NPS 0-6)' if predicao_classe == 1 else 'Não Detrator (NPS 7-10)'})")
+print(f"-> Classe Predita: {predicao_classe} ({'Detrator (nps_score < 7)' if predicao_classe == 1 else 'Não Detrator (nps_score >= 7)'})")
 print(f"-> Faixa de Atendimento Recomendada: {faixa_risco}")
 
 if faixa_risco == "Risco Crítico":

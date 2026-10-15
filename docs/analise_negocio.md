@@ -35,31 +35,31 @@ Esses são possíveis usos de negócio derivados da análise. O repositório atu
 
 ## 4. Definição da target
 
-A variável original de satisfação é `nps_score`, coletada após a experiência de compra ou o encerramento do atendimento. Ela foi escolhida por sintetizar a percepção geral do cliente em uma escala de 0 a 10 e por permitir acompanhar a disposição de recomendação da empresa. A classificação tradicional do NPS é:
+A variável original de satisfação é `nps_score`, coletada após a experiência de compra ou o encerramento do atendimento. Ela foi escolhida por sintetizar a percepção geral do cliente em uma escala de 0 a 10 e por permitir acompanhar a disposição de recomendação da empresa. **2.075 das 2.500 notas são não inteiras**; por isso, neste projeto a classificação usa limites contínuos:
 
-- **0 a 6:** detrator;
-- **7 a 8:** neutro;
-- **9 a 10:** promotor.
+- **score < 7:** detrator;
+- **7 <= score < 9:** neutro;
+- **9 <= score <= 10:** promotor.
 
 O projeto adotou uma classificação binária para responder a uma decisão operacional específica: identificar risco de detração. A variável `is_detractor` é criada assim:
 
-- `1`: `nps_score` entre 0 e 6;
-- `0`: `nps_score` entre 7 e 10, reunindo neutros e promotores.
+- `1`: `nps_score < 7`;
+- `0`: `nps_score >= 7`, reunindo neutros e promotores.
 
-Essa escolha simplifica a priorização de casos, mas não substitui a leitura do NPS em suas três categorias. Usar `nps_score` como entrada causaria vazamento, pois a própria target é derivada dessa variável. `repeat_purchase_30d` também é posterior à jornada, e `csat_internal_score` foi excluída porque seu momento de coleta não está documentado. Portanto, o score deve ser gerado após a atualização dos dados operacionais disponíveis e antes da aplicação da pesquisa de NPS; variáveis de atendimento só devem ser usadas se já existirem nesse momento.
+Assim, uma nota como 6,9 é detratora; não se deve arredondar a nota antes de classificá-la. Essa escolha simplifica a priorização de casos, mas não substitui a leitura do NPS em suas três categorias. Usar `nps_score` como entrada causaria vazamento, pois a própria target é derivada dessa variável. `repeat_purchase_30d` também é posterior à jornada, e `csat_internal_score` foi excluída porque seu momento de coleta não está documentado. Portanto, o score deve ser gerado após a atualização dos dados operacionais disponíveis e antes da aplicação da pesquisa de NPS; variáveis de atendimento só devem ser usadas se já existirem nesse momento.
 
 ## 5. Diagnóstico
 
-A amostra contém **2.500 pedidos** e **19 variáveis originais**. Na validação realizada, não foram encontrados valores ausentes nem duplicidades. O NPS observado foi de **-69,64%**, com **74,04% de detratores**, **21,56% de neutros** e **4,40% de promotores**. A nota média foi **4,379**.
+A amostra contém **2.500 pedidos** e **19 variáveis originais**. Na validação realizada, não foram encontrados valores ausentes nem duplicidades. Com a classificação por limites contínuos, o NPS observado é **-79,96%**, com **84,36% de detratores (2.109)**, **11,24% de neutros (281)** e **4,40% de promotores (110)**. A nota média é **4,379**. A regra anterior (`score <= 6`) deixava 258 notas entre 6 e 7 fora da classe detratora; todos os indicadores de detração e os artefatos derivados precisam ser recalculados.
 
 ### 5.1. Atraso na entrega do pedido
 
 | Faixa de atraso | Pedidos | NPS médio | Detratores |
 | --- | ---: | ---: | ---: |
-| Sem atraso | 277 | 6,86 | 36,46% |
-| 1 a 2 dias | 1.261 | 5,05 | 67,72% |
-| 3 a 4 dias | 795 | 3,10 | 91,82% |
-| 5 dias ou mais | 167 | 1,28 | 99,40% |
+| Sem atraso | 277 | 6,86 | 51,62% |
+| 1 a 2 dias | 1.261 | 5,05 | 81,13% |
+| 3 a 4 dias | 795 | 3,10 | 97,61% |
+| 5 dias ou mais | 167 | 1,28 | 100,00% |
 
 Nesta amostra, a faixa a partir de 3 dias representa um ponto de atenção operacional relevante. O detalhamento estatístico e as visualizações estão em [docs/analise_exploratoria_dados.md](analise_exploratoria_dados.md).
 
@@ -67,10 +67,10 @@ Nesta amostra, a faixa a partir de 3 dias representa um ponto de atenção opera
 
 | Faixa de reclamações | Pedidos | NPS médio | Detratores |
 | --- | ---: | ---: | ---: |
-| 0 a 1 | 145 | 7,89 | 7,59% |
-| 2 a 3 | 784 | 5,31 | 59,06% |
-| 4 a 5 | 1.044 | 3,98 | 84,20% |
-| 6 ou mais | 527 | 2,82 | 94,50% |
+| 0 a 1 | 145 | 7,89 | 28,28% |
+| 2 a 3 | 784 | 5,31 | 75,89% |
+| 4 a 5 | 1.044 | 3,98 | 91,86% |
+| 6 ou mais | 527 | 2,82 | 97,53% |
 
 O aumento da quantidade de reclamações esteve associado a menor NPS e maior proporção de detratores. Essa associação não deve ser interpretada isoladamente como causalidade.
 
@@ -78,10 +78,10 @@ O aumento da quantidade de reclamações esteve associado a menor NPS e maior pr
 
 | Tempo de resolução | Pedidos | NPS médio | Detratores |
 | --- | ---: | ---: | ---: |
-| 0 a 2 dias | 629 | 5,04 | 64,23% |
-| 3 a 5 dias | 619 | 4,51 | 73,18% |
-| 6 a 8 dias | 637 | 4,18 | 77,39% |
-| 9 dias ou mais | 615 | 3,78 | 81,46% |
+| 0 a 2 dias | 629 | 5,04 | 77,74% |
+| 3 a 5 dias | 619 | 4,51 | 82,55% |
+| 6 a 8 dias | 637 | 4,18 | 86,81% |
+| 9 dias ou mais | 615 | 3,78 | 90,41% |
 
 Também foi observada uma elevação gradual da proporção de detratores conforme aumentou o tempo de resolução.
 
@@ -89,12 +89,12 @@ Também foi observada uma elevação gradual da proporção de detratores confor
 
 | Variável | Faixa observada | Pedidos | NPS médio | Detratores |
 | --- | --- | ---: | ---: | ---: |
-| Valor do frete | 2,62 a 29,93 | 625 | 4,42 | 73,44% |
-| Valor do frete | 46,27 a 76,13 | 624 | 4,21 | 76,44% |
-| Valor do pedido | 7,76 a 220,25 | 625 | 4,22 | 76,00% |
-| Valor do pedido | 577,29 a 1.983,81 | 625 | 4,56 | 71,84% |
-| Parcelas | 1 parcela | 206 | 4,31 | 77,18% |
-| Parcelas | 8 parcelas | 209 | 4,50 | 69,38% |
+| Valor do frete | 2,62 a 29,93 | 625 | 4,42 | 84,32% |
+| Valor do frete | 46,27 a 76,13 | 624 | 4,21 | 85,42% |
+| Valor do pedido | 7,76 a 220,25 | 625 | 4,22 | 86,56% |
+| Valor do pedido | 577,29 a 1.983,81 | 625 | 4,56 | 82,40% |
+| Parcelas | 1 parcela | 206 | 4,31 | 83,98% |
+| Parcelas | 8 parcelas | 209 | 4,50 | 84,21% |
 
 Na estrutura do pedido, os valores apresentaram pouca variação no NPS entre as faixas analisadas.
 
@@ -102,11 +102,11 @@ Na estrutura do pedido, os valores apresentaram pouca variação no NPS entre as
 
 | Região | Pedidos | NPS médio | Detratores |
 | --- | ---: | ---: | ---: |
-| Sul | 521 | 4,49 | 72,74% |
-| Nordeste | 485 | 4,42 | 74,02% |
-| Norte | 506 | 4,38 | 74,51% |
-| Sudeste | 520 | 4,37 | 74,62% |
-| Centro-Oeste | 468 | 4,21 | 74,36% |
+| Sul | 521 | 4,49 | 83,30% |
+| Nordeste | 485 | 4,42 | 85,57% |
+| Norte | 506 | 4,38 | 85,18% |
+| Sudeste | 520 | 4,37 | 83,65% |
+| Centro-Oeste | 468 | 4,21 | 84,19% |
 
 A comparação regional mostrou que a média de NPS e a proporção de detratores são muito semelhantes entre as regiões.
 
@@ -127,7 +127,7 @@ Também são úteis indicadores internos de recompra, retenção, devoluções, 
 
 As ações abaixo são propostas para uma futura implantação e usam os limiares observados ou já definidos no projeto como ponto de partida:
 
-1. **Alertas logísticos:** gerar um alerta quando o atraso observado ou previsto atingir **3 dias**, faixa em que a detração observada chegou a **89,71%**. A comunicação deve atualizar o prazo e registrar a tratativa.
+1. **Alertas logísticos:** gerar um alerta quando o atraso observado ou previsto atingir **3 dias**; nessa faixa, a detração observada foi de **87,93%**. A comunicação deve atualizar o prazo e registrar a tratativa.
 
 2. **Priorização de entrega:** encaminhar para avaliação operacional pedidos com **2 ou mais tentativas** de entrega ou atraso previsto, respeitando a capacidade da operação. Esse número é uma regra inicial a ser validada.
 

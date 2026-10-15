@@ -177,7 +177,7 @@ def winsorize_outlier_columns(
 def binarize_target(df: pd.DataFrame) -> pd.DataFrame:
     """
     Cria a variável alvo binária 'is_detractor' de acordo com a regra do NPS.
-    Detratores (notas de 0 a 6) recebem 1, outros (notas de 7 a 10) recebem 0.
+    Detratores (notas abaixo de 7) recebem 1; notas iguais ou acima de 7 recebem 0.
 
     Args:
         df (pd.DataFrame): DataFrame original.
@@ -188,8 +188,8 @@ def binarize_target(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Aplicando engenharia de target (binarização do NPS)...")
     df = df.copy()
 
-    # 1 se nps_score <= 6 (Detrator) e 0 se nps_score > 6 (Não Detrator)
-    df["is_detractor"] = (df["nps_score"] <= 6).astype(int)
+    # O NPS pode ser decimal: qualquer nota abaixo de 7 é detratora.
+    df["is_detractor"] = (df["nps_score"] < 7).astype(int)
 
     prop_detractors = df["is_detractor"].mean() * 100
     logger.info(

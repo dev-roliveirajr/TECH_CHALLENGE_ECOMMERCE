@@ -421,10 +421,10 @@ def create_score_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics = []
 
     # Faixas de NPS Score
-    nps_bins = [-1, 6, 8, 10, 11]
-    nps_labels = ["Detrator (0-6)", "Neutro (7-8)", "Promotor (9-10)", "Total"]
+    nps_bins = [-1, 7, 9, 11]
+    nps_labels = ["Detrator (<7)", "Neutro (7-<9)", "Promotor (9-10)"]
     df["nps_category"] = pd.cut(
-        df["nps_score"], bins=nps_bins, labels=nps_labels, right=True
+        df["nps_score"], bins=nps_bins, labels=nps_labels, right=False
     )
 
     nps_groups = (

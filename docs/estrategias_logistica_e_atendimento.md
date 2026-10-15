@@ -2,6 +2,8 @@
 
 Este documento complementa a análise de negócio e traduz os resultados do modelo em recomendações operacionais. Enquanto a análise de negócio contextualiza o problema, os stakeholders e o impacto do NPS, este material concentra-se em como uma futura operação poderia usar a previsão para priorizar logística e atendimento.
 
+**Definição usada:** como `nps_score` possui casas decimais, a classe detratora é definida por `nps_score < 7` (sem arredondamento). Taxas e recomendações quantitativas baseadas em detração devem usar essa regra.
+
 ## 1. O problema operacional e a lógica da ação proativa
 
 Na amostra analisada, a detração esteve associada a sinais de atrito operacional acumulado. Atrasos logísticos, múltiplos contatos com atendimento e tempo elevado de resolução podem indicar deterioração da experiência antes da aplicação da pesquisa de NPS. A partir desse diagnóstico, uma operação futura poderia priorizar casos de maior risco antes da coleta da pesquisa.
