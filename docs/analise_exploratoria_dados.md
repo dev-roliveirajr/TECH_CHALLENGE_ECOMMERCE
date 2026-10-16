@@ -158,8 +158,8 @@ Um dos achados mais relevantes da análise exploratória é o comportamento não
 Os pontos mais importantes observados nesta amostra foram:
 
 - **sem atraso:** taxa de detração de 51,62%
-- **1 a 2 dias de atraso:** taxa de detração de 51,62% a 73,98%, conforme o dia
-- **3 dias:** 87,93%; **4 dias:** 96,76%; **5 dias ou mais:** 99,54% de detração
+- **1 a 2 dias de atraso:** taxa de detração de 73,98% a 87,93%, conforme o dia
+- **3 dias:** 96,76%; **4 dias:** 99,26%; **5 dias ou mais:** 100,00% de detração
 - **6 dias ou mais:** detração próxima a 100%
 
 Esse comportamento indica que a decisão operacional não deve ser guiada apenas pela média geral. Há um ponto de ruptura claro, em que a experiência do cliente muda de forma abrupta e a detração se acelera. Esse achado é importante porque coloca em evidência a necessidade de ações preventivas antes que o atraso ultrapasse um limite crítico.
@@ -282,4 +282,4 @@ Os gráficos profissionais que comprovam visualmente estes insights foram gerado
 5.  `spearman_correlation_matrix.png`: Um mapa de calor das correlações de Spearman de todas as variáveis operacionais com a detração.
 6.  `detraction_by_region.png`: Gráfico de barras empilhadas que ilustra visualmente a independência da taxa de detração entre as diferentes regiões do país.
 
-[^1]: É importante deixar claro que esse bloco refere-se ao artefato gerado pelo pipeline em `src/dataset.py`, e não à base bruta de exploração original. A base raw mantém a estrutura inicial do CSV, enquanto a versão processada é produzida ao executar o pipeline, que aplica a winsorização nas colunas selecionadas antes de salvar o arquivo final em `data/processed/processed_nps_data.csv`.
+[^1]: É importante deixar claro que esse bloco refere-se ao artefato gerado por `src/dataset.py` para análise exploratória e métricas descritivas, e não à base bruta. A versão processada aplica winsorização calculada sobre a base analítica inteira antes de salvar `data/processed/processed_nps_data.csv`; ela não é usada no treinamento do modelo. O treino parte da base raw e ajusta os limites IQR exclusivamente nos dados de treino, dentro da pipeline, inclusive separadamente em cada fold da validação cruzada.

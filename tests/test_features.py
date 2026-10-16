@@ -3,6 +3,7 @@ import pytest
 
 from src import config
 from src.features import (
+    IQRWinsorizer,
     build_preprocessing_pipeline,
     get_feature_lists,
     split_features_target,
@@ -48,3 +49,14 @@ def test_preprocessing_pipeline_imputes_and_encodes_data():
 
     assert transformed.shape == (3, 4)
     assert transformed.dtype.kind == "f"
+
+
+def test_iqr_winsorizer_learns_bounds_from_fit_data_only():
+    training = pd.DataFrame({"amount": [0, 1, 2, 3]})
+    holdout = pd.DataFrame({"amount": [100]})
+
+    winsorizer = IQRWinsorizer(columns=["amount"]).fit(training)
+    transformed = winsorizer.transform(holdout)
+
+    assert winsorizer.bounds_["amount"] == (-1.5, 4.5)
+    assert transformed["amount"].tolist() == [4.5]

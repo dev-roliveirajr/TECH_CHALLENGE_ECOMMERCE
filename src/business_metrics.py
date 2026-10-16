@@ -70,10 +70,14 @@ def create_buyer_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics = []
 
     # Faixas de Idade
-    age_bins = [0, 25, 35, 45, 55, 65, 100]
-    age_labels = ["18-25", "26-35", "36-45", "46-55", "56-65", "65+"]
+    age_bins = [18, 25, 35, 45, 55, 65, np.inf]
+    age_labels = ["18-25", "26-35", "36-45", "46-55", "56-65", "66+"]
     df["age_group"] = pd.cut(
-        df["customer_age"], bins=age_bins, labels=age_labels, right=False
+        df["customer_age"],
+        bins=age_bins,
+        labels=age_labels,
+        right=True,
+        include_lowest=True,
     )
 
     age_groups = (
@@ -88,7 +92,7 @@ def create_buyer_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(age_groups)
 
     # Faixas de Tempo de Relacionamento
-    tenure_bins = [0, 12, 24, 36, 48, 60, 120]
+    tenure_bins = [0, 12, 24, 36, 48, 60, np.inf]
     tenure_labels = [
         "0-1 ano",
         "1-2 anos",
@@ -148,7 +152,7 @@ def create_order_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics = []
 
     # Faixas de Valor do Pedido
-    value_bins = [0, 100, 250, 500, 750, 1000, 2000]
+    value_bins = [0, 100, 250, 500, 750, 1000, np.inf]
     value_labels = [
         "R$ 0-100",
         "R$ 100-250",
@@ -173,17 +177,21 @@ def create_order_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(value_groups)
 
     # Faixas de Quantidade de Itens
-    qty_bins = [0, 1, 2, 3, 5, 10, 100]
+    qty_bins = [0, 1, 2, 3, 4, 6, 11, np.inf]
     qty_labels = [
+        "0 items",
         "1 item",
         "2 items",
         "3 items",
         "4-5 items",
         "6-10 items",
-        "10+ items",
+        "11+ items",
     ]
     df["qty_group"] = pd.cut(
-        df["items_quantity"], bins=qty_bins, labels=qty_labels, right=False
+        df["items_quantity"],
+        bins=qty_bins,
+        labels=qty_labels,
+        right=False,
     )
 
     qty_groups = (
@@ -198,7 +206,7 @@ def create_order_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(qty_groups)
 
     # Faixas de Valor de Frete
-    freight_bins = [0, 20, 35, 50, 65, 100]
+    freight_bins = [0, 20, 35, 50, 65, np.inf]
     freight_labels = ["R$ 0-20", "R$ 20-35", "R$ 35-50", "R$ 50-65", "R$ 65+"]
     df["freight_group"] = pd.cut(
         df["freight_value"], bins=freight_bins, labels=freight_labels, right=False
@@ -236,10 +244,13 @@ def create_logistics_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics = []
 
     # Faixas de Atraso na Entrega (CRÍTICA)
-    delay_bins = [-1, 0, 1, 2, 3, 4, 10]
-    delay_labels = ["Sem atraso", "1 dia", "2 dias", "3 dias", "4 dias", "5+ dias"]
+    delay_bins = [-1, 1, 3, 5, np.inf]
+    delay_labels = ["Sem atraso", "1-2 dias", "3-4 dias", "5+ dias"]
     df["delay_group"] = pd.cut(
-        df["delivery_delay_days"], bins=delay_bins, labels=delay_labels, right=False
+        df["delivery_delay_days"],
+        bins=delay_bins,
+        labels=delay_labels,
+        right=False,
     )
 
     delay_groups = (
@@ -254,8 +265,8 @@ def create_logistics_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(delay_groups)
 
     # Faixas de Tempo de Entrega
-    delivery_time_bins = [0, 2, 4, 6, 8, 12]
-    delivery_time_labels = ["0-2 dias", "2-4 dias", "4-6 dias", "6-8 dias", "8+ dias"]
+    delivery_time_bins = [0, 3, 6, 9, np.inf]
+    delivery_time_labels = ["0-2 dias", "3-5 dias", "6-8 dias", "9+ dias"]
     df["delivery_time_group"] = pd.cut(
         df["delivery_time_days"],
         bins=delivery_time_bins,
@@ -280,16 +291,19 @@ def create_logistics_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(delivery_time_groups)
 
     # Faixas de Tentativas de Entrega
-    attempts_bins = [0, 1, 2, 3, 4, 10]
+    attempts_bins = [0, 1, 2, 3, 4, np.inf]
     attempts_labels = [
+        "0 tentativas",
         "1 tentativa",
         "2 tentativas",
         "3 tentativas",
-        "4 tentativas",
-        "5+ tentativas",
+        "4+ tentativas",
     ]
     df["attempts_group"] = pd.cut(
-        df["delivery_attempts"], bins=attempts_bins, labels=attempts_labels, right=False
+        df["delivery_attempts"],
+        bins=attempts_bins,
+        labels=attempts_labels,
+        right=False,
     )
 
     attempts_groups = (
@@ -325,14 +339,12 @@ def create_support_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics = []
 
     # Faixas de Quantidade de Reclamações (CRÍTICA)
-    complaints_bins = [-1, 0, 2, 4, 6, 8, 12]
+    complaints_bins = [-1, 2, 4, 6, np.inf]
     complaints_labels = [
-        "0 reclamações",
-        "1-2 reclamações",
-        "3-4 reclamações",
-        "5-6 reclamações",
-        "7-8 reclamações",
-        "9+ reclamações",
+        "0-1 reclamações",
+        "2-3 reclamações",
+        "4-5 reclamações",
+        "6+ reclamações",
     ]
     df["complaints_group"] = pd.cut(
         df["complaints_count"],
@@ -353,8 +365,8 @@ def create_support_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(complaints_groups)
 
     # Faixas de Tempo de Resolução
-    resolution_bins = [0, 3, 6, 9, 12]
-    resolution_labels = ["0-3 dias", "3-6 dias", "6-9 dias", "9+ dias"]
+    resolution_bins = [0, 3, 6, 9, np.inf]
+    resolution_labels = ["0-2 dias", "3-5 dias", "6-8 dias", "9+ dias"]
     df["resolution_group"] = pd.cut(
         df["resolution_time_days"],
         bins=resolution_bins,
@@ -374,19 +386,14 @@ def create_support_metrics(df: pd.DataFrame) -> pd.DataFrame:
     metrics.append(resolution_groups)
 
     # Faixas de Contatos com Atendimento
-    contacts_bins = [0, 1, 2, 3, 5, 10]
-    contacts_labels = [
-        "1 contato",
-        "2 contatos",
-        "3 contatos",
-        "4-5 contatos",
-        "6+ contatos",
-    ]
+    contacts_bins = [-0.5, 0.5, 1.5, 2.5, np.inf]
+    contacts_labels = ["0 contatos", "1 contato", "2 contatos", "3+ contatos"]
     df["contacts_group"] = pd.cut(
         df["customer_service_contacts"],
         bins=contacts_bins,
         labels=contacts_labels,
-        right=False,
+        right=True,
+        include_lowest=True,
     )
 
     contacts_groups = (
@@ -444,10 +451,13 @@ def create_score_metrics(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # CSAT Interno
-    csat_bins = [0, 4, 6, 8, 11]
-    csat_labels = ["Baixo (0-4)", "Médio (5-6)", "Alto (7-8)", "Muito Alto (9-10)"]
+    csat_bins = [0, 5, 7, 9, np.inf]
+    csat_labels = ["Baixo (0-4)", "Médio (5-6)", "Alto (7-8)", "Muito Alto (9+)"]
     df["csat_category"] = pd.cut(
-        df["csat_internal_score"], bins=csat_bins, labels=csat_labels, right=False
+        df["csat_internal_score"],
+        bins=csat_bins,
+        labels=csat_labels,
+        right=False,
     )
 
     csat_groups = (

@@ -1,10 +1,10 @@
 Dimensão,Métrica,Faixa,Qtd Clientes,Taxa Detração,NPS Médio,Qtd Pedidos
-Comprador,Faixa Etária (anos),18-25,344.0,84.88%,4.46,
-Comprador,Faixa Etária (anos),26-35,461.0,79.61%,4.65,
-Comprador,Faixa Etária (anos),36-45,509.0,88.41%,4.13,
-Comprador,Faixa Etária (anos),46-55,480.0,84.17%,4.3,
-Comprador,Faixa Etária (anos),56-65,468.0,86.97%,4.28,
-Comprador,Faixa Etária (anos),65+,238.0,79.41%,4.63,
+Comprador,Faixa Etária (anos),18-25,389.0,84.83%,4.48,
+Comprador,Faixa Etária (anos),26-35,465.0,80.43%,4.56,
+Comprador,Faixa Etária (anos),36-45,517.0,88.59%,4.12,
+Comprador,Faixa Etária (anos),46-55,468.0,82.48%,4.41,
+Comprador,Faixa Etária (anos),56-65,476.0,86.97%,4.27,
+Comprador,Faixa Etária (anos),66+,185.0,79.46%,4.64,
 Comprador,Tempo de Relacionamento,0-1 ano,224.0,86.61%,4.17,
 Comprador,Tempo de Relacionamento,1-2 anos,242.0,80.99%,4.65,
 Comprador,Tempo de Relacionamento,2-3 anos,252.0,85.32%,4.36,
@@ -22,46 +22,45 @@ Pedido,Faixa de Valor,R$ 250-500,937.0,84.63%,4.42,937.0
 Pedido,Faixa de Valor,R$ 500-750,487.0,83.57%,4.41,487.0
 Pedido,Faixa de Valor,R$ 750-1K,190.0,81.05%,4.62,190.0
 Pedido,Faixa de Valor,R$ 1K+,136.0,82.35%,4.53,136.0
-Pedido,Quantidade de Itens,2 items,409.0,83.37%,4.33,409.0
-Pedido,Quantidade de Itens,3 items,418.0,82.54%,4.47,418.0
-Pedido,Quantidade de Itens,4-5 items,870.0,85.4%,4.28,870.0
-Pedido,Quantidade de Itens,6-10 items,803.0,84.68%,4.47,803.0
+Pedido,Quantidade de Itens,1 item,409.0,83.37%,4.33,409.0
+Pedido,Quantidade de Itens,2 items,418.0,82.54%,4.47,418.0
+Pedido,Quantidade de Itens,3 items,462.0,85.5%,4.34,462.0
+Pedido,Quantidade de Itens,4-5 items,812.0,84.98%,4.31,812.0
+Pedido,Quantidade de Itens,6-10 items,399.0,84.71%,4.51,399.0
 Pedido,Faixa de Frete,R$ 0-20,157.0,85.35%,4.4,157.0
 Pedido,Faixa de Frete,R$ 20-35,825.0,82.42%,4.53,825.0
 Pedido,Faixa de Frete,R$ 35-50,1114.0,85.64%,4.32,1114.0
 Pedido,Faixa de Frete,R$ 50-65,372.0,85.22%,4.2,372.0
 Pedido,Faixa de Frete,R$ 65+,32.0,75.0%,4.52,32.0
-Logística,Dias de Atraso,1 dia,277.0,51.62%,6.86,277.0
-Logística,Dias de Atraso,2 dias,615.0,73.98%,5.55,615.0
-Logística,Dias de Atraso,3 dias,646.0,87.93%,4.58,646.0
-Logística,Dias de Atraso,4 dias,525.0,96.76%,3.44,525.0
-Logística,Dias de Atraso,5+ dias,437.0,99.54%,2.0,437.0
-Logística,Tempo de Entrega,2-4 dias,386.0,83.68%,4.29,386.0
-Logística,Tempo de Entrega,4-6 dias,387.0,87.34%,4.34,387.0
-Logística,Tempo de Entrega,6-8 dias,365.0,84.38%,4.54,365.0
-Logística,Tempo de Entrega,8+ dias,757.0,84.15%,4.39,757.0
-Logística,Tentativas de Entrega,2 tentativas,824.0,84.22%,4.35,824.0
-Logística,Tentativas de Entrega,3 tentativas,838.0,86.75%,4.26,838.0
-Logística,Tentativas de Entrega,4 tentativas,838.0,82.1%,4.52,838.0
-Atendimento,Qtd de Reclamações,1-2 reclamações,145.0,28.28%,7.89,145.0
-Atendimento,Qtd de Reclamações,3-4 reclamações,784.0,75.89%,5.31,784.0
-Atendimento,Qtd de Reclamações,5-6 reclamações,1044.0,91.86%,3.98,1044.0
-Atendimento,Qtd de Reclamações,7-8 reclamações,435.0,97.24%,2.97,435.0
-Atendimento,Qtd de Reclamações,9+ reclamações,92.0,98.91%,2.14,92.0
-Atendimento,Tempo de Resolução,0-3 dias,629.0,77.74%,5.04,629.0
-Atendimento,Tempo de Resolução,3-6 dias,619.0,82.55%,4.51,619.0
-Atendimento,Tempo de Resolução,6-9 dias,637.0,86.81%,4.18,637.0
+Logística,Dias de Atraso,Sem atraso,277.0,51.62%,6.86,277.0
+Logística,Dias de Atraso,1-2 dias,1261.0,81.13%,5.05,1261.0
+Logística,Dias de Atraso,3-4 dias,795.0,97.61%,3.1,795.0
+Logística,Dias de Atraso,5+ dias,167.0,100.0%,1.28,167.0
+Logística,Tempo de Entrega,0-2 dias,203.0,85.71%,4.34,203.0
+Logística,Tempo de Entrega,3-5 dias,570.0,85.44%,4.31,570.0
+Logística,Tempo de Entrega,6-8 dias,567.0,83.25%,4.48,567.0
+Logística,Tempo de Entrega,9+ dias,1160.0,84.14%,4.37,1160.0
+Logística,Tentativas de Entrega,1 tentativa,824.0,84.22%,4.35,824.0
+Logística,Tentativas de Entrega,2 tentativas,838.0,86.75%,4.26,838.0
+Logística,Tentativas de Entrega,3 tentativas,838.0,82.1%,4.52,838.0
+Atendimento,Qtd de Reclamações,0-1 reclamações,145.0,28.28%,7.89,145.0
+Atendimento,Qtd de Reclamações,2-3 reclamações,784.0,75.89%,5.31,784.0
+Atendimento,Qtd de Reclamações,4-5 reclamações,1044.0,91.86%,3.98,1044.0
+Atendimento,Qtd de Reclamações,6+ reclamações,527.0,97.53%,2.82,527.0
+Atendimento,Tempo de Resolução,0-2 dias,629.0,77.74%,5.04,629.0
+Atendimento,Tempo de Resolução,3-5 dias,619.0,82.55%,4.51,619.0
+Atendimento,Tempo de Resolução,6-8 dias,637.0,86.81%,4.18,637.0
 Atendimento,Tempo de Resolução,9+ dias,615.0,90.41%,3.78,615.0
-Atendimento,Contatos com CS,1 contato,554.0,70.76%,5.54,554.0
-Atendimento,Contatos com CS,2 contatos,816.0,83.95%,4.66,816.0
-Atendimento,Contatos com CS,3 contatos,640.0,88.59%,4.12,640.0
-Atendimento,Contatos com CS,4-5 contatos,490.0,94.9%,2.94,490.0
+Atendimento,Contatos com CS,0 contatos,554.0,70.76%,5.54,554.0
+Atendimento,Contatos com CS,1 contato,816.0,83.95%,4.66,816.0
+Atendimento,Contatos com CS,2 contatos,640.0,88.59%,4.12,640.0
+Atendimento,Contatos com CS,3+ contatos,490.0,94.9%,2.94,490.0
 Score,Categoria NPS,Detrator (<7),2109.0,,3.65,2109.0
 Score,Categoria NPS,Neutro (7-<9),281.0,,7.79,281.0
 Score,Categoria NPS,Promotor (9-10),110.0,,9.61,110.0
-Score,CSAT Interno,Baixo (0-4),1643.0,92.94%,3.59,1643.0
-Score,CSAT Interno,Médio (5-6),535.0,78.32%,5.32,535.0
-Score,CSAT Interno,Alto (7-8),273.0,54.95%,6.61,273.0
-Score,CSAT Interno,Muito Alto (9-10),49.0,26.53%,8.18,49.0
+Score,CSAT Interno,Baixo (0-4),1937.0,91.38%,3.81,1937.0
+Score,CSAT Interno,Médio (5-6),426.0,65.96%,5.98,426.0
+Score,CSAT Interno,Alto (7-8),123.0,47.15%,7.24,123.0
+Score,CSAT Interno,Muito Alto (9+),14.0,0.0%,9.11,14.0
 Score,Recompra 30 dias,Sem recompra (30d),2282.0,92.42%,3.94,2282.0
 Score,Recompra 30 dias,Com recompra (30d),218.0,0.0%,9.01,218.0

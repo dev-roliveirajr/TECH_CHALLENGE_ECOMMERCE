@@ -130,9 +130,9 @@ def winsorize_outlier_columns(
     factor: float = 1.5,
 ) -> pd.DataFrame:
     """
-    Aplica winsorização por regra IQR para limitar valores extremos em colunas
-    selecionadas, preservando a linha no DataFrame e reduzindo a influência de
-    outliers na modelagem e na análise exploratória.
+    Aplica winsorização por regra IQR às bases de análise exploratória e métricas
+    descritivas. Para modelagem, use IQRWinsorizer em src.features, que ajusta
+    os limites apenas nos dados de treino e os reaplica no holdout/inferência.
 
     Args:
         df (pd.DataFrame): DataFrame a ser tratado.

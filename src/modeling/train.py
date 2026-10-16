@@ -17,7 +17,6 @@ from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.dummy import DummyClassifier
-from sklearn.pipeline import Pipeline
 from sklearn.metrics import (
     roc_auc_score,
     average_precision_score,
@@ -31,11 +30,11 @@ from sklearn.inspection import permutation_importance
 # Garantir que o diretório pai esteja no PATH para importações locais
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from src import config  # noqa: E402
-from src.dataset import load_raw_data  # noqa: E402
+from src.dataset import binarize_target, load_raw_data, validate_data  # noqa: E402
 from src.features import (  # noqa: E402
     split_features_target,
     get_feature_lists,
-    build_preprocessing_pipeline,
+    build_model_pipeline,
 )
 
 # Configuração de logging
@@ -49,25 +48,12 @@ def train_and_evaluate():
     """
     Função principal que executa todo o fluxo de treinamento e auditoria.
     """
-    # 1. Carregar dados processados
-    processed_path = config.DATA_DIR / "processed" / "processed_nps_data.csv"
-    if not processed_path.exists():
-        logger.error(
-            f"Arquivo de dados processados não encontrado em: {processed_path}. "
-            "Executando dataset.py..."
-        )
-        from src import dataset
-
-        # Executar dataset.py para gerar a base se não existir
-        df = dataset.load_raw_data()
-        dataset.validate_data(df)
-        df_target = dataset.binarize_target(df)
-        df_risk = dataset.create_business_risk_features(df_target)
-        processed_path.parent.mkdir(parents=True, exist_ok=True)
-        df_risk.to_csv(processed_path, index=False)
-
-    df = pd.read_csv(processed_path)
-    logger.info(f"Dados carregados para modelagem. Shape: {df.shape}")
+    # 1. Carregar dados brutos. As estatísticas de winsorização são aprendidas
+    # somente depois do split, dentro do pipeline de cada fold/modelo.
+    df = load_raw_data()
+    validate_data(df)
+    df = binarize_target(df)
+    logger.info(f"Dados brutos carregados para modelagem. Shape: {df.shape}")
 
     # 2. Divisão X/y e Holdout estratificado (80/20)
     X, y = split_features_target(df)
@@ -79,8 +65,6 @@ def train_and_evaluate():
 
     # 3. Engenharia de Features e Pré-processamento
     num_features, cat_features = get_feature_lists(X_train)
-    preprocessor = build_preprocessing_pipeline(num_features, cat_features)
-
     # 4. Configurar Modelos Concorrentes
     models = {
         "DummyClassifier": DummyClassifier(
@@ -100,7 +84,7 @@ def train_and_evaluate():
 
     logger.info("Iniciando Validação Cruzada Estratificada de 5 Folds...")
     for name, model in models.items():
-        pipe = Pipeline([("preprocessor", preprocessor), ("model", model)])
+        pipe = build_model_pipeline(num_features, cat_features, model)
 
         cv_results = cross_validate(
             pipe,
@@ -144,7 +128,7 @@ def train_and_evaluate():
     best_model_name = "LogisticRegression"
     best_model = models[best_model_name]
 
-    final_pipeline = Pipeline([("preprocessor", preprocessor), ("model", best_model)])
+    final_pipeline = build_model_pipeline(num_features, cat_features, best_model)
 
     logger.info(
         "Treinando o pipeline preditivo final em toda a base de treinamento (80%)..."

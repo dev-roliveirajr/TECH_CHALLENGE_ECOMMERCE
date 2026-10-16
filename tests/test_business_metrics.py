@@ -83,6 +83,18 @@ def test_create_buyer_metrics_returns_expected_structure():
     )
     assert (result["Taxa Detração"].between(0, 1)).all()
 
+    age_counts = result.loc[result["Métrica"].eq("Faixa Etária (anos)")].set_index(
+        "Faixa"
+    )["Qtd Clientes"]
+    assert age_counts.to_dict() == {
+        "18-25": 1,
+        "26-35": 3,
+        "36-45": 2,
+        "46-55": 2,
+        "56-65": 2,
+        "66+": 2,
+    }
+
 
 def test_create_business_dimension_metrics_are_non_empty():
     df = _make_business_dataframe()
@@ -108,6 +120,52 @@ def test_create_business_dimension_metrics_are_non_empty():
     assert nps_categories["Detrator (<7)"] == 5
     assert nps_categories["Neutro (7-<9)"] == 3
     assert nps_categories["Promotor (9-10)"] == 4
+
+    def category_counts(metrics, metric_name):
+        return (
+            metrics.loc[metrics["Métrica"].eq(metric_name)]
+            .set_index("Faixa")["Qtd Pedidos"]
+            .to_dict()
+        )
+
+    assert category_counts(logistics_metrics, "Dias de Atraso") == {
+        "Sem atraso": 2,
+        "1-2 dias": 2,
+        "3-4 dias": 3,
+        "5+ dias": 5,
+    }
+    assert category_counts(logistics_metrics, "Tentativas de Entrega") == {
+        "1 tentativa": 3,
+        "2 tentativas": 2,
+        "3 tentativas": 3,
+        "4+ tentativas": 4,
+    }
+    assert category_counts(support_metrics, "Qtd de Reclamações") == {
+        "0-1 reclamações": 4,
+        "2-3 reclamações": 3,
+        "4-5 reclamações": 2,
+        "6+ reclamações": 3,
+    }
+    assert category_counts(support_metrics, "Contatos com CS") == {
+        "0 contatos": 1,
+        "1 contato": 1,
+        "2 contatos": 2,
+        "3+ contatos": 8,
+    }
+    assert category_counts(order_metrics, "Quantidade de Itens") == {
+        "1 item": 2,
+        "2 items": 2,
+        "3 items": 2,
+        "4-5 items": 3,
+        "6-10 items": 3,
+    }
+    assert sum(category_counts(order_metrics, "Faixa de Valor").values()) == 12
+    assert category_counts(score_metrics, "CSAT Interno") == {
+        "Baixo (0-4)": 2,
+        "Médio (5-6)": 2,
+        "Alto (7-8)": 4,
+        "Muito Alto (9+)": 4,
+    }
 
 
 def test_generate_business_metrics_report_saves_csv_and_includes_all_dimensions(

@@ -215,6 +215,8 @@ antes de criar o commit.
    * **Baixo Risco:** Probabilidade $\le 0.50$
    * **Alto Risco:** Probabilidade entre $0.50$ e $0.75$
    * **Risco Crítico:** Probabilidade $> 0.75$
+
+Na modelagem, a winsorização IQR é ajustada dentro do pipeline do Scikit-Learn: os limites são aprendidos somente no treino de cada fold e no conjunto de treino final, e o modelo serializado reaplica esses mesmos limites em holdout e inferência. O dataset winsorizado gerado para análises descritivas não é usado para treinar o modelo.
 ### Momento da predição e disponibilidade das variáveis
 
 O score deve ser gerado após a atualização dos dados operacionais do pedido e antes da aplicação da pesquisa de NPS. Para evitar o uso de informação futura, `nps_score` e `repeat_purchase_30d` são excluídos do modelo. A variável `csat_internal_score` também é excluída porque o momento de sua coleta não está definido. Variáveis de atendimento, como `complaints_count`, `customer_service_contacts` e `resolution_time_days`, só devem ser usadas na operação se já estiverem disponíveis no momento definido para a escoragem; caso contrário, devem permanecer restritas a análises retrospectivas.
@@ -248,7 +250,7 @@ Para garantir a reprodutibilidade e a operacionalização do **NPS Preditivo** e
 O ciclo de vida de treinamento do modelo preditivo foi estruturado em duas camadas complementares (Produção vs. Experimentação):
 
 1. **Via Script de Produção (`src/modeling/train.py`):**
-    * **Fluxo Oficial MLOps (Headless):** Este é o motor de produção automatizado. Ele carrega os dados processados e higienizados de `data/processed/processed_nps_data.csv`, faz o split de holdout estratificado 80/20 (com proporção de detratores de **84,36%** na base atualmente analisada), roda a Validação Cruzada Estratificada de 5 folds (Stratified 5-Fold CV) para auditar os classificadores e exporta o binário final consolidado com o pré-processador para `models/detractor_classifier.joblib`.
+    * **Fluxo Oficial MLOps (Headless):** Este é o motor de produção automatizado. Ele carrega e valida a base bruta em `data/raw/desafio_nps_fase_1.csv`, deriva a target e faz o split estratificado 80/20 (com proporção de detratores de **84,36%** na base analisada). A winsorização IQR e as demais transformações são ajustadas dentro da pipeline em cada fold e no treino final; por fim, o modelo e o pré-processador são exportados juntos em `models/detractor_classifier.joblib`.
    * **Execução via CLI Direta:**
      ```bash
          .venv/bin/python src/modeling/train.py

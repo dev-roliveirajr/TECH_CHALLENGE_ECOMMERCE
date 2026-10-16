@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
@@ -19,6 +20,56 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src import config  # noqa: E402
 
 logger = logging.getLogger(__name__)
+
+WINSORIZED_FEATURES = (
+    "customer_service_contacts",
+    "delivery_delay_days",
+    "complaints_count",
+)
+
+
+class IQRWinsorizer(BaseEstimator, TransformerMixin):
+    """Learn IQR clipping bounds from fit data and reuse them on later data."""
+
+    def __init__(self, columns: list[str], factor: float = 1.5):
+        self.columns = columns
+        self.factor = factor
+
+    def fit(self, X: pd.DataFrame, y=None):
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("IQRWinsorizer espera um DataFrame do pandas.")
+
+        missing_columns = [column for column in self.columns if column not in X]
+        if missing_columns:
+            raise ValueError(f"Colunas ausentes para winsorização: {missing_columns}")
+
+        self.bounds_ = {}
+        for column in self.columns:
+            q1 = X[column].quantile(0.25)
+            q3 = X[column].quantile(0.75)
+            iqr = q3 - q1
+            self.bounds_[column] = (
+                q1 - self.factor * iqr,
+                q3 + self.factor * iqr,
+            )
+
+        return self
+
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("IQRWinsorizer espera um DataFrame do pandas.")
+        if not hasattr(self, "bounds_"):
+            raise RuntimeError("IQRWinsorizer precisa ser ajustado antes do uso.")
+
+        transformed = X.copy()
+        for column, (lower_bound, upper_bound) in self.bounds_.items():
+            if column not in transformed:
+                raise ValueError(f"Coluna '{column}' ausente ao aplicar winsorização.")
+            transformed[column] = transformed[column].clip(
+                lower=lower_bound, upper=upper_bound
+            )
+
+        return transformed
 
 
 def get_feature_lists(df: pd.DataFrame):
@@ -102,6 +153,23 @@ def build_preprocessing_pipeline(
     )
 
     return preprocessor
+
+
+def build_model_pipeline(num_features: list, cat_features: list, model) -> Pipeline:
+    """Build the full fit-safe preprocessing and estimator pipeline."""
+    winsorized_columns = [
+        column for column in WINSORIZED_FEATURES if column in num_features
+    ]
+    return Pipeline(
+        steps=[
+            ("winsorizer", IQRWinsorizer(columns=winsorized_columns)),
+            (
+                "preprocessor",
+                build_preprocessing_pipeline(num_features, cat_features),
+            ),
+            ("model", model),
+        ]
+    )
 
 
 def split_features_target(df: pd.DataFrame, target_col: str = "is_detractor"):

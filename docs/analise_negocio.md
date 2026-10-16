@@ -127,7 +127,7 @@ Também são úteis indicadores internos de recompra, retenção, devoluções, 
 
 As ações abaixo são propostas para uma futura implantação e usam os limiares observados ou já definidos no projeto como ponto de partida:
 
-1. **Alertas logísticos:** gerar um alerta quando o atraso observado ou previsto atingir **3 dias**; nessa faixa, a detração observada foi de **87,93%**. A comunicação deve atualizar o prazo e registrar a tratativa.
+1. **Alertas logísticos:** gerar um alerta quando o atraso observado ou previsto atingir **3 dias**; nessa faixa, a detração observada foi de **96,76%**. A comunicação deve atualizar o prazo e registrar a tratativa.
 
 2. **Priorização de entrega:** encaminhar para avaliação operacional pedidos com **2 ou mais tentativas** de entrega ou atraso previsto, respeitando a capacidade da operação. Esse número é uma regra inicial a ser validada.
 

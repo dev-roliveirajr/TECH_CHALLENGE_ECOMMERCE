@@ -31,6 +31,8 @@ Para controlar esse risco, estruturamos o arquivo de configurações centralizad
 
 O módulo de engenharia de features (`src/features.py`) utiliza os pipelines unificados do Scikit-Learn:
 
+Antes do pré-processamento, o pipeline aplica winsorização IQR às variáveis `customer_service_contacts`, `delivery_delay_days` e `complaints_count`. O transformador aprende os limites exclusivamente no subconjunto usado por `fit`: portanto, cada fold da validação cruzada calcula seus próprios limites com os dados de treino daquele fold, e o holdout usa limites aprendidos no treino de 80%. O mesmo transformador serializado aplica esses limites durante inferência. Os relatórios descritivos podem continuar usando o dataset winsorizado em `src/dataset.py`; esse artefato não é a entrada do treinamento do modelo.
+
 ```python
 preprocessor = ColumnTransformer(
     transformers=[
